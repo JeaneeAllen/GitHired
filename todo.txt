@@ -1,0 +1,15 @@
+Reducer for apply/decline buttons
+Reducer for job info similar to:
+        const customerInfo = (state = {
+            customer_name: '',
+            street_address: '',
+            city: '',
+            zip: ''
+            }, action) => {
+        if (action.type === 'SET_CUSTOMER_INFO') {
+                return action.payload
+            }
+        return state
+            }
+
+*Be sure to add reducers to root.
