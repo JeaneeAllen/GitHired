@@ -62,6 +62,10 @@ function UserPage() {
               <h2>{job.title}</h2>
               <p>{job.description}</p>
               <a href={job.redirect_url}>Apply</a>
+              <div className="job-actions">
+                  <button onClick={() => saveJob(job)} className="apply-button" >Save</button>
+                  <button className="decline-button">Remove</button>
+                </div>
             </li>
           ))
         ) : (

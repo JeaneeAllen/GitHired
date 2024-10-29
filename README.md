@@ -102,7 +102,7 @@ This code is also heavily commented. We recommend reading through the comments, 
   - Footer/Footer
   - Nav/Nav
   - AboutPage/AboutPage
-  - InfoPage/InfoPage
+  - InfoPage/InfoPage - changed to SavedJobs
   - UserPage/UserPage
   - LoginPage/LoginPage
   - RegisterPage/RegisterPage
