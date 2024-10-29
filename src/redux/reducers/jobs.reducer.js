@@ -11,6 +11,12 @@ const jobsReducer = (state = { jobs: [], savedJobs: [] }, action) => {
                 savedJobs: [...state.savedJobs, action.payload]
 
             };
+
+        case 'LOAD_SAVED_JOBS':
+            return {
+                ...state,
+                savedJobs: action.payload
+            };
         default:
             return state;
     }

@@ -9,23 +9,39 @@ function UserPage() {
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState([]);
+  const [page, setPage] = useState(1);
   const dispatch = useDispatch();
 
+  const fetchJobs = async (searchKeywords, searchLocation, currentPage) => {
+    const response = await axios.get('/api/jobs/search', {
+      params: {
+        keywords: searchKeywords,
+        location: searchLocation,
+        page: currentPage
+      }
+    });
+    return response.data;
+  };
+
   useEffect(() => {
-    const fetchSavedJobs = async () => {
-      const response = await axios.get(`/api/jobs/${user.id}`);
-      setJobs(response.data);
+    const fetchDefaultJobs = async () => {
+      const defaultJobs = await fetchJobs('Software Engineer', 'Minnesota', page);
+      setJobs(defaultJobs);
     };
-    fetchSavedJobs();
-  }, [user.id]);
+    fetchDefaultJobs();
+  }, [keywords, location, page]);
 
   const handleSearch = async (event) => {
     event.preventDefault();
-    const response = await axios.get('/api/jobs/search', {
-      params: { keywords, location }
-    });
-    console.log(response.data);
-    setJobs(response.data);
+    const newJobs = await fetchJobs(keywords, location, 1);
+    setJobs(newJobs);
+    setPage(1);
+  };
+
+  const loadMoreJobs = async () => {
+    const newJobs = await fetchJobs(keywords, location, page + 1);
+    setJobs((prevJobs) => [...prevJobs, ...newJobs]);
+    setPage(page + 1);
   };
 
   const saveJob = async (job) => {
@@ -37,7 +53,7 @@ function UserPage() {
   return (
     <div className="container">
       <h2>Welcome, {user.username}!</h2>
-      <p>Your ID is: {user.id}</p>
+      <p>Your New Journey Awaits! Find New Career Opportunities Below.</p>
 
       <h1>Find Jobs</h1>
       <form onSubmit={handleSearch}>
@@ -63,15 +79,20 @@ function UserPage() {
               <p>{job.description}</p>
               <a href={job.redirect_url}>Apply</a>
               <div className="job-actions">
-                  <button onClick={() => saveJob(job)} className="apply-button" >Save</button>
-                  <button className="decline-button">Remove</button>
-                </div>
+                <button onClick={() => saveJob(job)} className="apply-button" >Save</button>
+                <button className="decline-button">Remove</button>
+              </div>
             </li>
           ))
         ) : (
           <p>Loading jobs...</p>
         )}
       </ul>
+      <div>
+        {jobs.length > 0 && (
+          <button onClick={loadMoreJobs} className="next-button">Next</button>
+        )}
+      </div>
 
       <LogOutButton className="btn" />
     </div>

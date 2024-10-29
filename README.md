@@ -101,7 +101,7 @@ This code is also heavily commented. We recommend reading through the comments, 
   - App/App
   - Footer/Footer
   - Nav/Nav
-  - AboutPage/AboutPage
+  - AboutPage/AboutPage - changed to JobDetails
   - InfoPage/InfoPage - changed to SavedJobs
   - UserPage/UserPage
   - LoginPage/LoginPage

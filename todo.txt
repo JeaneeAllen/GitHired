@@ -13,3 +13,8 @@ Reducer for job info similar to:
             }
 
 *Be sure to add reducers to root.
+
+Updates to features:
+-Possibly change the save button to turn green and/or toggle to allow users to remove or unselect the listing
+-Move the redirect url to the MyJobs page
+-Have jobs display on DOM when page loads.

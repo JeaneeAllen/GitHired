@@ -29,11 +29,11 @@ function Nav() {
             </Link>
 
             <Link className="navLink" to="/savedjobs">
-            Saved Jobs
+            My Jobs
             </Link>
 
-            <Link className="navLink" to="/about">
-              About
+            <Link className="navLink" to="/JobDetails">
+            Job Details
             </Link>
 
             <LogOutButton className="navLink" />
