@@ -1,9 +1,10 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
+const pool = require('../modules/pool')
 
 
-router.get('/api/jobs/search', async (req, res) => {
+router.get('/search', async (req, res) => {
     const { keywords, location } = req.query;
     try {
         const response = await axios.get(`https://api.adzuna.com/v1/api/jobs/us/search/1`, {
@@ -19,6 +20,17 @@ router.get('/api/jobs/search', async (req, res) => {
     } catch (error) {
         console.error('Error fetching jobs from Adzuna:', error);
         res.status(500).json({ error: 'Failed to fetch jobs from Adzuna' });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM jobs WHERE user_id = $1', [id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching jobs:', error);
+        res.status(500).json({ error: 'Failed to retrieve jobs' });
     }
 });
 
