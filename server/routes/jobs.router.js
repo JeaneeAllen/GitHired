@@ -11,7 +11,7 @@ router.get('/search', async (req, res) => {
             params: {
                 app_id: process.env.ADZUNA_API_ID,
                 app_key: process.env.ADZUNA_API_KEY,
-                results_per_page: 10,
+                results_per_page: 8,
                 what: keywords,
                 where: location
             }

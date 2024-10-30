@@ -5,12 +5,12 @@ function SavedJobs() {
 
 
   return (
-    
-      <div className="container">
-        <p>My Saved Jobs</p>
-  
-        <table className="jobs-table">
-          <thead>
+
+    <div className="container">
+      <p>My Saved Jobs</p>
+
+      <table className="jobs-table">
+        {/* <thead>
             <tr>
               <th>Company Name</th>
               <th>Job Title</th>
@@ -23,37 +23,39 @@ function SavedJobs() {
               <th>Contact Info</th>
               <th></th>
             </tr>
-          </thead>
-          <tbody>
-            {jobData.length > 0 ? (
-              jobData.map((job, index) => (
-                <tr key={index}>
-                  <td>{job.companyName}</td>
-                  <td>{job.jobTitle}</td>
-                  <td>{job.listingDate}</td>
-                  <td>{job.jobDescription}</td>
-                  <td>{job.dateApplied}</td>
-                  <td>
-                    <a href={job.resumeLink} target="_blank" rel="noopener noreferrer">
-                      Link
-                    </a>
-                  </td>
-                  <td>{job.applicationStatus}</td>
-                  <td>{job.interviewDetails}</td>
-                  <td>{job.contactInfo}</td>
-                  <td> <a href={job.redirect_url}>Apply</a></td>
-                  <td><button className="details-button">Details</button></td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="10">No job applications found.</td>
+          </thead> */}
+        <tbody>
+          {jobData.length > 0 ? (
+            jobData.map((job, index) => (
+              <tr key={index}>
+                <td>{job.companyName}</td>
+                <td>{job.jobTitle}</td>
+                <td>{job.listingDate}</td>
+                <td>{job.jobDescription}</td>
+                <td>{job.dateApplied}</td>
+                <td>
+                  <a href={job.resumeLink} target="_blank" rel="noopener noreferrer">
+                    Link
+                  </a>
+                </td>
+                <td>{job.applicationStatus}</td>
+                <td>{job.interviewDetails}</td>
+                <td>{job.contactInfo}</td>
+                <td> <a href={job.redirect_url}>Apply</a></td>
+                <td><button className="details-button">Details</button></td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-  
-  export default SavedJobs;
+            ))
+          ) : (
+            <tr>
+              <td colSpan="10">No job applications found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <img src="MyJobs.png" alt="Saved Jobs" />
+    </div>
+  );
+}
+
+export default SavedJobs;

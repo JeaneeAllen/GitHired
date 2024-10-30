@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import './UserPage.css';
 
 function UserPage() {
-
   const user = useSelector((store) => store.user);
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
@@ -29,7 +29,7 @@ function UserPage() {
       setJobs(defaultJobs);
     };
     fetchDefaultJobs();
-  }, [keywords, location, page]);
+  }, [page]);
 
   const handleSearch = async (event) => {
     event.preventDefault();
@@ -49,55 +49,59 @@ function UserPage() {
     dispatch({ type: 'SAVE_JOB', payload: job });
   };
 
-
   return (
-    <div className="container">
-      <h2>Welcome, {user.username}!</h2>
-      <p>Your New Journey Awaits! Find New Career Opportunities Below.</p>
+    <div className="user-page-container">
+      <div className="header">
+        <h2>Welcome, {user.username}!</h2>
+        <p>Embark on Your Next Adventure! Discover Exciting New Career Opportunities Below.</p>
+      </div>
 
-      <h1>Find Jobs</h1>
-      <form onSubmit={handleSearch}>
-        <input type="text"
-          value={keywords}
-          onChange={(e) => setKeywords(e.target.value)}
-          placeholder="Job Title or Keywords" />
+      <div className="search-container">
+        <h1>Find Jobs</h1>
+        <form onSubmit={handleSearch}>
+          <input
+            type="text"
+            value={keywords}
+            onChange={(e) => setKeywords(e.target.value)}
+            placeholder="Job Title or Keywords"
+          />
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Location"
+          />
+          <button type="submit">Search</button>
+        </form>
+      </div>
 
-        <input type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder="Location" />
-
-        <button type="submit">Search</button>
-      </form>
-
-      <h1>Job Listings</h1>
-      <ul>
-        {jobs.length > 0 ? (
-          jobs.map((job) => (
-            <li key={job.id}>
-              <h2>{job.title}</h2>
-              <p>{job.description}</p>
-              <a href={job.redirect_url}>Apply</a>
-              <div className="job-actions">
-                <button onClick={() => saveJob(job)} className="apply-button" >Save</button>
-                <button className="decline-button">Remove</button>
+      <div className="job-listings-container">
+        <h1>Job Listings</h1>
+        <div className="job-grid">
+          {jobs.length > 0 ? (
+            jobs.map((job) => (
+              <div key={job.id} className="job-card">
+                <div className="job-info">
+                  <h2>{job.title}</h2>
+                  <p>{job.description}</p>
+                </div>
+                <a href={job.redirect_url} target="_blank" rel="noopener noreferrer">Apply</a>
+                <div className="job-actions">
+                  <button onClick={() => saveJob(job)} className="apply-button">Save</button>
+                  <button className="decline-button">Remove</button>
+                </div>
               </div>
-            </li>
-          ))
-        ) : (
-          <p>Loading jobs...</p>
-        )}
-      </ul>
-      <div>
+            ))
+          ) : (
+            <p>Loading jobs...</p>
+          )}
+        </div>
         {jobs.length > 0 && (
           <button onClick={loadMoreJobs} className="next-button">Next</button>
         )}
       </div>
-
-      <LogOutButton className="btn" />
     </div>
   );
 }
 
-// this allows us to use <App /> in index.js
 export default UserPage;
