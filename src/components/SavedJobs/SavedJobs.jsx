@@ -1,59 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import './SavedJobs.css';
 
 function SavedJobs() {
-  const jobData = [];
+  const [jobData, setJobData] = useState([]);
+  const user = useSelector((store) => store.user); // Get the current user
 
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        const response = await axios.get(`/api/jobs/${user.id}`);
+        setJobData(response.data);
+      } catch (error) {
+        console.error('Error fetching saved jobs:', error);
+      }
+    };
+    fetchSavedJobs();
+  }, [user.id]);
 
   return (
-
     <div className="container">
-      <p>My Saved Jobs</p>
+      <h2>My Saved Jobs</h2>
 
       <table className="jobs-table">
-        {/* <thead>
-            <tr>
-              <th>Company Name</th>
-              <th>Job Title</th>
-              <th>Job Listing Date</th>
-              <th>Job Description</th>
-              <th>Date Applied</th>
-              <th>Resume & Cover Letter Link</th>
-              <th>Application Status</th>
-              <th>Interview Date, Time, and Location</th>
-              <th>Contact Info</th>
-              <th></th>
-            </tr>
-          </thead> */}
+        <thead>
+          <tr>
+            <th>Company Name</th>
+            <th>Job Title</th>
+            <th>Job Listing Date</th>
+            <th>Job Description</th>
+            <th>Date Applied</th>
+            <th>Resume & Cover Letter Link</th>
+            <th>Application Status</th>
+            <th>Interview Date, Time, and Location</th>
+            <th>Contact Info</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
         <tbody>
           {jobData.length > 0 ? (
             jobData.map((job, index) => (
               <tr key={index}>
-                <td>{job.companyName}</td>
-                <td>{job.jobTitle}</td>
-                <td>{job.listingDate}</td>
-                <td>{job.jobDescription}</td>
-                <td>{job.dateApplied}</td>
+                <td>{job.company}</td>
+                <td>{job.title}</td>
+                <td>{job.created}</td>
+                <td>{job.description}</td>
+                <td>{job.date_applied}</td>
                 <td>
-                  <a href={job.resumeLink} target="_blank" rel="noopener noreferrer">
+                  <a href={job.resume_link} target="_blank" rel="noopener noreferrer">
                     Link
                   </a>
                 </td>
-                <td>{job.applicationStatus}</td>
-                <td>{job.interviewDetails}</td>
-                <td>{job.contactInfo}</td>
-                <td> <a href={job.redirect_url}>Apply</a></td>
-                <td><button className="details-button">Details</button></td>
+                <td>{job.application_status}</td>
+                <td>{job.interview_details}</td>
+                <td>{job.contact_info}</td>
+                <td>
+                  <a href={job.redirect_url} target="_blank" rel="noopener noreferrer" className="apply-link">
+                    Apply
+                  </a>
+                  <button className="details-button">Details</button>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="10">No job applications found.</td>
+              <td colSpan="10" className="empty-cell">No saved jobs found.</td>
             </tr>
           )}
         </tbody>
       </table>
-
-      <img src="MyJobs.png" alt="Saved Jobs" />
     </div>
   );
 }

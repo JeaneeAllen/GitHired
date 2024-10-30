@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import LogOutButton from '../LogOutButton/LogOutButton';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import './UserPage.css';
+import './HomePage.css';
 
-function UserPage() {
+function HomePage() {
   const user = useSelector((store) => store.user);
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const fetchJobs = async (searchKeywords, searchLocation, currentPage) => {
     const response = await axios.get('/api/jobs/search', {
@@ -45,9 +46,35 @@ function UserPage() {
   };
 
   const saveJob = async (job) => {
-    await axios.post('/api/jobs', { ...job, user_id: user.id });
-    dispatch({ type: 'SAVE_JOB', payload: job });
-  };
+    console.log("Saving job:", job); // Log job to verify data structure
+    try {
+        const jobResult = await axios.post('/api/jobs', {
+            title: job.title,
+            company: job.company,
+            created: job.created,
+            description: job.description,
+            redirect_url: job.redirect_url 
+        });
+        console.log("Job saved response:", jobResult.data); // Check backend response
+        dispatch({ type: 'SAVE_JOB', payload: jobResult.data });
+        alert(`Job "${job.title}" saved successfully!`);
+        history.push('/savedjobs');
+    } catch (error) {
+        console.error('Error saving job:', error);
+        alert('Failed to save job. Please try again.');
+    }
+};
+
+const removeJob = async (job) => {
+    try {
+      await axios.delete(`/api/jobs/${job.id}`);
+      setJobs((prevJobs) => prevJobs.filter((j) => j.id !== job.id)); // Correct filter logic
+      alert(`Job "${job.title}" removed successfully.`);
+    } catch (error) {
+      console.error('Error removing job:', error);
+      alert('Failed to remove job. Please try again.');
+    }
+};
 
   return (
     <div className="user-page-container">
@@ -64,12 +91,16 @@ function UserPage() {
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
             placeholder="Job Title or Keywords"
+            id="job-keywords"
+            name="job-keywords"
           />
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Location"
+            id="job-location"
+            name="job-location"
           />
           <button type="submit">Search</button>
         </form>
@@ -88,12 +119,12 @@ function UserPage() {
                 <a href={job.redirect_url} target="_blank" rel="noopener noreferrer">Apply</a>
                 <div className="job-actions">
                   <button onClick={() => saveJob(job)} className="apply-button">Save</button>
-                  <button className="decline-button">Remove</button>
+                  <button onClick={() => removeJob(job)} className="decline-button">Remove</button>
                 </div>
               </div>
             ))
           ) : (
-            <p>Loading jobs...</p>
+            <p>No jobs found. Please try a different search.</p>
           )}
         </div>
         {jobs.length > 0 && (
@@ -104,4 +135,4 @@ function UserPage() {
   );
 }
 
-export default UserPage;
+export default HomePage;

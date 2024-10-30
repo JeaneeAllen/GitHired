@@ -103,7 +103,7 @@ This code is also heavily commented. We recommend reading through the comments, 
   - Nav/Nav
   - AboutPage/AboutPage - changed to JobDetails
   - InfoPage/InfoPage - changed to SavedJobs
-  - UserPage/UserPage
+  - UserPage/UserPage - changed to HomePage
   - LoginPage/LoginPage
   - RegisterPage/RegisterPage
   - LogOutButton/LogOutButton

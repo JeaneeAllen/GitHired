@@ -14,7 +14,7 @@ import Footer from '../Footer/Footer';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 import JobDetails from '../JobDetails/JobDetails';
-import UserPage from '../UserPage/UserPage';
+import HomePage from '../HomePage/HomePage';
 import SavedJobs from '../SavedJobs/SavedJobs';
 import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
@@ -49,7 +49,7 @@ function App() {
             exact
             path="/user"
           >
-            <UserPage />
+            <HomePage />
           </ProtectedRoute>
 
           <ProtectedRoute
