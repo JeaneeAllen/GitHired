@@ -12,7 +12,7 @@ router.get('/search', async (req, res) => {
             params: {
                 app_id: process.env.ADZUNA_API_ID,
                 app_key: process.env.ADZUNA_API_KEY,
-                results_per_page: 8,
+                results_per_page: 10,
                 what: keywords,
                 where: location
             }
@@ -28,17 +28,40 @@ router.get('/search', async (req, res) => {
 // Get saved jobs for a specific user
 router.get('/:userId', async (req, res) => {
     const { userId } = req.params;
+    console.log("Fetching saved jobs for user ID:", userId); // Log userId for debugging
     try {
         const result = await pool.query(
-            'SELECT * FROM jobs INNER JOIN applications ON jobs.id = applications.job_id WHERE applications.user_id = $1', 
+            `SELECT 
+                j.id AS job_id,
+                j.title,
+                j.company,
+                j.created,
+                j.description,
+                j.redirect_url,
+                a.id AS application_id,
+                a.user_id,
+                a.date_applied,
+                a.resume_link,
+                a.application_status,
+                a.interview_details,
+                a.contact_info
+            FROM 
+                jobs j
+            INNER JOIN 
+                applications a ON j.id = a.job_id
+            WHERE 
+                a.user_id = $1;`,  // Filter by user ID
             [userId]
         );
+        console.log("Fetched saved jobs:", result.rows); // Log result.rows
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching saved jobs:', error);
         res.status(500).json({ error: 'Failed to retrieve saved jobs' });
     }
 });
+
+
 
 // Save a job application
 router.post('/applications', async (req, res) => {
@@ -59,16 +82,15 @@ router.post('/applications', async (req, res) => {
     }
 });
 
-// Save a job listing (insertion)
 router.post('/', async (req, res) => {
-    const {title, company, created, description, redirect_url } = req.body;
+    const { title, company, created, description, redirect_url, user_id } = req.body;
 
     try {
         const result = await pool.query(
             `INSERT INTO jobs (
-                title, company, created, description, redirect_url
-            ) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [title, company, created, description, redirect_url]
+                title, company, created, description, redirect_url, user_id
+            ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [title, company, created, description, redirect_url, user_id]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {

@@ -12,6 +12,7 @@ function SavedJobs() {
       try {
         const response = await axios.get(`/api/jobs/${user.id}`);
         setJobData(response.data);
+        console.log('Fetched jobs:', response.data); // Log fetched data for debugging
       } catch (error) {
         console.error('Error fetching saved jobs:', error);
       }
@@ -44,7 +45,7 @@ function SavedJobs() {
               <tr key={index}>
                 <td>{job.company}</td>
                 <td>{job.title}</td>
-                <td>{job.created}</td>
+                <td>{new Date(job.created).toLocaleDateString()}</td>
                 <td>{job.description}</td>
                 <td>{job.date_applied}</td>
                 <td>
@@ -70,6 +71,12 @@ function SavedJobs() {
           )}
         </tbody>
       </table>
+
+      <img src="MyJobs.png" alt="My Jobs" />
+
+      <dive>
+      <button className="next-button">Apply</button>
+      </dive>
     </div>
   );
 }

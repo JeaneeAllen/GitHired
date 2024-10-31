@@ -48,13 +48,14 @@ function HomePage() {
   const saveJob = async (job) => {
     console.log("Saving job:", job); // Log job to verify data structure
     try {
-        const jobResult = await axios.post('/api/jobs', {
-            title: job.title,
-            company: job.company,
-            created: job.created,
-            description: job.description,
-            redirect_url: job.redirect_url 
-        });
+      const jobResult = await axios.post('/api/jobs', {
+        title: job.title,
+        company: job.company,
+        created: job.created,
+        description: job.description,
+        redirect_url: job.redirect_url,
+        user_id: user.id // Ensure user.id is defined and valid
+    });
         console.log("Job saved response:", jobResult.data); // Check backend response
         dispatch({ type: 'SAVE_JOB', payload: jobResult.data });
         alert(`Job "${job.title}" saved successfully!`);
