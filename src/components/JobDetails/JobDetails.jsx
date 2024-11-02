@@ -41,6 +41,7 @@ function JobDetails({ job }) {
   
 
     return (
+      <>
         <form onSubmit={handleSubmit} className="application-form">
 
             <label>
@@ -93,9 +94,13 @@ function JobDetails({ job }) {
                 />
             </label>
 
-            <button type="submit">Save Details</button>
-            <button type="submit">Remove Job</button>
+            <button type="submit">Save Job Details</button>
         </form>
+<div>
+<button type="submit">Remove Job</button>
+</div>
+
+</>
     );
 }
 
