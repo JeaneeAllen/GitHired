@@ -1,0 +1,38 @@
+.application-form {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.application-form h2 {
+    margin-bottom: 20px;
+}
+
+.application-form label {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.application-form input,
+.application-form textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.application-form button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.application-form button:hover {
+    background-color: #0056b3;
+}
