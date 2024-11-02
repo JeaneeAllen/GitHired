@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import './SavedJobs.css';
 
 function SavedJobs() {
-  const [jobData, setJobData] = useState([]);
-  const user = useSelector((store) => store.user); // Get the current user
+  const savedJobs = useSelector((state) => state.jobs.savedJobs);
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
-    const fetchSavedJobs = async () => {
+    const fetchJobs = async () => {
       try {
-        const response = await axios.get(`/api/jobs/${user.id}`);
-        setJobData(response.data);
-        console.log('Fetched jobs:', response.data); // Log fetched data for debugging
+        const response = await axios.get('/api/jobs/jobs/all-jobs');
+        if (response.data.success) {
+          dispatch({ type: 'LOAD_SAVED_JOBS', payload: response.data.data });
+        } else {
+          console.error('Failed to fetch jobs:', response.data.message);
+          // Handle the case where the API was reached but did not succeed
+        }
       } catch (error) {
-        console.error('Error fetching saved jobs:', error);
+        console.error('Error fetching jobs:', error);
+        // Handle fetch error (e.g., network issue)
       }
     };
-    fetchSavedJobs();
-  }, [user.id]);
+    fetchJobs();
+  }, [dispatch]);
 
   return (
     <div className="container">
@@ -34,49 +40,33 @@ function SavedJobs() {
             <th>Date Applied</th>
             <th>Resume & Cover Letter Link</th>
             <th>Application Status</th>
-            <th>Interview Date, Time, and Location</th>
+            <th>Interview Details</th>
             <th>Contact Info</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {jobData.length > 0 ? (
-            jobData.map((job, index) => (
-              <tr key={index}>
-                <td>{job.company}</td>
-                <td>{job.title}</td>
-                <td>{new Date(job.created).toLocaleDateString()}</td>
-                <td>{job.description}</td>
-                <td>{job.date_applied}</td>
-                <td>
-                  <a href={job.resume_link} target="_blank" rel="noopener noreferrer">
-                    Link
-                  </a>
-                </td>
-                <td>{job.application_status}</td>
-                <td>{job.interview_details}</td>
-                <td>{job.contact_info}</td>
-                <td>
-                  <a href={job.redirect_url} target="_blank" rel="noopener noreferrer" className="apply-link">
-                    Apply
-                  </a>
-                  <button className="details-button">Details</button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="10" className="empty-cell">No saved jobs found.</td>
+          {(savedJobs || []).map((job) => (
+            <tr key={job.id || job.job_id}>
+              <td>{job.company || 'N/A'}</td>
+              <td>{job.title || 'N/A'}</td>
+              <td>{new Date(job.job_created).toLocaleDateString() || 'N/A'}</td>
+              <td>{job.job_description || 'N/A'}</td>
+              <td>{job.date_applied || 'N/A'}</td>
+              <td>{job.resume_link ? <a href={job.resume_link}>Link</a> : 'N/A'}</td>
+              <td>{job.application_status || 'N/A'}</td>
+              <td>{job.interview_details || 'N/A'}</td>
+              <td>{job.contact_info || 'N/A'}</td>
+
+              <td>
+                <button onClick={() => window.open(job.job_redirect_url, '_blank')}>Apply</button>
+                <button>Add Details</button>
+              </td>
+
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
-
-      <img src="MyJobs.png" alt="My Jobs" />
-
-      <dive>
-      <button className="next-button">Apply</button>
-      </dive>
     </div>
   );
 }

@@ -2,6 +2,10 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT || 5001;
+const cors = require('cors');
+
+
+app.use(cors());
 
 // Middleware Includes
 const sessionMiddleware = require('./modules/session-middleware');
