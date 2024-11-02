@@ -99,4 +99,32 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Save a job details
+router.post('/applications', async (req, res) => {
+    const { job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info } = req.body;
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO applications (
+                job_id, user_id, date_applied, resume_link, application_status,
+                interview_details, contact_info
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info]
+        );
+        res.status(201).json({
+            success: true,
+            data: result.rows[0],
+        });
+    } catch (error) {
+        console.error('Error saving application:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to save application',
+            error: error.message,
+        });
+    }
+});
+
+
+
 module.exports = router;
