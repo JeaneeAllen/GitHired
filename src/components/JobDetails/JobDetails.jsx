@@ -11,7 +11,7 @@ function JobDetails() {
 
         <img src="JobDetails.png" alt="Job Details" />
 
-        
+
       </div>
     </div>
   );
