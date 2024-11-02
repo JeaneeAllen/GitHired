@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import './SavedJobs.css';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function SavedJobs() {
   const savedJobs = useSelector((state) => state.jobs.savedJobs);
   const dispatch = useDispatch();
+  const history = useHistory();
 
 
   useEffect(() => {
@@ -26,9 +28,33 @@ function SavedJobs() {
     fetchJobs();
   }, [dispatch]);
 
+  const handleClick = async (event) => {
+    event.preventDefault();
+    history.push('/user');
+  };
+
+  const handleDetails = async (event) => {
+    event.preventDefault();
+    history.push('/JobDetails');
+  };
+
+   // Function to extract company name
+   const getCompanyName = (company) => {
+    try {
+      // Check if the company is a JSON string
+      const parsedCompany = JSON.parse(company);
+      return parsedCompany.display_name || 'N/A';
+    } catch (error) {
+      // If parsing fails, return the company string directly
+      return company || 'N/A';
+    }
+  };
+  
+
   return (
     <div className="container">
       <h2>My Saved Jobs</h2>
+      
 
       <table className="jobs-table">
         <thead>
@@ -36,7 +62,6 @@ function SavedJobs() {
             <th>Company Name</th>
             <th>Job Title</th>
             <th>Job Listing Date</th>
-            <th>Job Description</th>
             <th>Date Applied</th>
             <th>Resume & Cover Letter Link</th>
             <th>Application Status</th>
@@ -46,12 +71,11 @@ function SavedJobs() {
           </tr>
         </thead>
         <tbody>
-          {(savedJobs || []).map((job) => (
-            <tr key={job.id || job.job_id}>
-              <td>{job.company || 'N/A'}</td>
+          {(savedJobs || []).map((job, index) => (
+            <tr key={job.id || job.job_id || index}>
+              <td>{getCompanyName(job.company)}</td>
               <td>{job.title || 'N/A'}</td>
               <td>{new Date(job.job_created).toLocaleDateString() || 'N/A'}</td>
-              <td>{job.job_description || 'N/A'}</td>
               <td>{job.date_applied || 'N/A'}</td>
               <td>{job.resume_link ? <a href={job.resume_link}>Link</a> : 'N/A'}</td>
               <td>{job.application_status || 'N/A'}</td>
@@ -59,8 +83,9 @@ function SavedJobs() {
               <td>{job.contact_info || 'N/A'}</td>
 
               <td>
-                <button onClick={() => window.open(job.job_redirect_url, '_blank')}>Apply</button>
-                <button>Add Details</button>
+                <button onClick={() => window.open(job.job_redirect_url, '_blank')}>Apply ✔</button>
+                <button onClick={handleDetails}> ✏️ Add Details</button>
+                <button onClick={handleClick}> ⬅ Back to Search</button>
               </td>
 
             </tr>
