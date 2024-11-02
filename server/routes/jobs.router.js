@@ -18,7 +18,14 @@ router.get('/search', async (req, res) => {
             }
         });
         console.log("Fetched jobs from Adzuna:", response.data.results); // Log response
-        res.json(response.data.results);
+        // Map over the results to include the company name
+        const jobsWithCompanyNames = response.data.results.map(job => ({
+            ...job,
+            companyName: job.company.display_name // Extracting the company name
+        }));
+
+        // Send back the modified jobs
+        res.json(jobsWithCompanyNames);
     } catch (error) {
         console.error('Error fetching jobs from Adzuna:', error);
         res.status(500).json({ error: 'Failed to fetch jobs from Adzuna' });
@@ -107,6 +114,23 @@ router.get('/jobs/all-jobs', async (req, res) => {
             message: 'Failed to retrieve jobs',
             error: error.message,
         });
+    }
+});
+
+// DELETE route to remove a job by ID
+router.delete('/:id', async (req, res) => {
+    const jobId = req.params.id;
+    try {
+        const result = await pool.query('DELETE FROM jobs WHERE id = $1 RETURNING *', [jobId]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        res.status(200).json({ message: 'Job removed successfully' });
+    } catch (error) {
+        console.error('Error deleting job:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
