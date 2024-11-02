@@ -55,27 +55,21 @@ function HomePage() {
         description: job.description,
         redirect_url: job.redirect_url,
         user_id: user.id // Ensure user.id is defined and valid
-    });
-        console.log("Job saved response:", jobResult.data); // Check backend response
-        dispatch({ type: 'SAVE_JOB', payload: jobResult.data });
-        alert(`Job "${job.title}" saved successfully!`);
-        history.push('/savedjobs');
+      });
+      console.log("Job saved response:", jobResult.data); // Check backend response
+      dispatch({ type: 'SAVE_JOB', payload: jobResult.data });
+      alert(`Job "${job.title}" saved successfully!`);
+      history.push('/savedjobs');
     } catch (error) {
-        console.error('Error saving job:', error);
-        alert('Failed to save job. Please try again.');
+      console.error('Error saving job:', error);
+      alert('Failed to save job. Please try again.');
     }
-};
+  };
 
-const removeJob = async (job) => {
-    try {
-      await axios.delete(`/api/jobs/${job.id}`);
-      setJobs((prevJobs) => prevJobs.filter((j) => j.id !== job.id)); // Correct filter logic
-      alert(`Job "${job.title}" removed successfully.`);
-    } catch (error) {
-      console.error('Error removing job:', error);
-      alert('Failed to remove job. Please try again.');
-    }
-};
+  const removeListing = (job) => {
+    setJobs((prevJobs) => prevJobs.filter((j) => j.id !== job.id)); // Update state to remove job from list
+    alert(`Job "${job.title}" removed from the list.`);
+  };
 
   return (
     <div className="user-page-container">
@@ -119,7 +113,7 @@ const removeJob = async (job) => {
                 </div>
                 <div className="job-actions">
                   <button onClick={() => saveJob(job)} className="apply-button">Save</button>
-                  <button onClick={() => removeJob(job)} className="decline-button">Remove</button>
+                  <button onClick={() => removeListing(job)} className="decline-button">Remove</button>
                 </div>
               </div>
             ))

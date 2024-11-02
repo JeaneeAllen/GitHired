@@ -110,6 +110,23 @@ router.get('/jobs/all-jobs', async (req, res) => {
     }
 });
 
+// DELETE route to remove a job by ID
+router.delete('/:id', async (req, res) => {
+    const jobId = req.params.id;
+    try {
+        const result = await pool.query('DELETE FROM jobs WHERE id = $1 RETURNING *', [jobId]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        res.status(200).json({ message: 'Job removed successfully' });
+    } catch (error) {
+        console.error('Error deleting job:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 
 // Export the router
 module.exports = router;
