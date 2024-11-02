@@ -25,43 +25,6 @@ router.get('/search', async (req, res) => {
     }
 });
 
-// Get saved jobs for a specific user
-router.get('/:userId', async (req, res) => {
-    const { userId } = req.params;
-    console.log("Fetching saved jobs for user ID:", userId); // Log userId for debugging
-    try {
-        const result = await pool.query(
-            `SELECT 
-                j.id AS job_id,
-                j.title,
-                j.company,
-                j.created,
-                j.description,
-                j.redirect_url,
-                a.id AS application_id,
-                a.user_id,
-                a.date_applied,
-                a.resume_link,
-                a.application_status,
-                a.interview_details,
-                a.contact_info
-            FROM 
-                jobs j
-            INNER JOIN 
-                applications a ON j.id = a.job_id
-            WHERE 
-                a.user_id = $1;`,  // Filter by user ID
-            [userId]
-        );
-        console.log("Fetched saved jobs:", result.rows); // Log result.rows
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching saved jobs:', error);
-        res.status(500).json({ error: 'Failed to retrieve saved jobs' });
-    }
-});
-
-
 
 // Save a job application
 router.post('/applications', async (req, res) => {
@@ -75,22 +38,32 @@ router.post('/applications', async (req, res) => {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
             [job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info]
         );
-        res.status(201).json(result.rows[0]);
+        res.status(201).json({
+            success: true,
+            data: result.rows[0], // Include the saved application in the response
+        });
     } catch (error) {
         console.error('Error saving application:', error);
-        res.status(500).json({ error: 'Failed to save application' });
+        res.status(500).json({
+            success: false,
+            message: 'Failed to save application',
+            error: error.message,
+        });
     }
 });
 
 router.post('/', async (req, res) => {
     const { title, company, created, description, redirect_url, user_id } = req.body;
 
+    // Parse the company name from JSON if it is a JSON object
+    const companyName = typeof company === 'string' ? JSON.parse(company).display_name : company;
+
     try {
         const result = await pool.query(
             `INSERT INTO jobs (
                 title, company, created, description, redirect_url, user_id
             ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [title, company, created, description, redirect_url, user_id]
+            [title, companyName, created, description, redirect_url, user_id]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -99,4 +72,44 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Route to get all jobs
+router.get('/jobs/all-jobs', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                jobs.company,
+                jobs.title,
+                jobs.created AS job_created,
+                jobs.description AS job_description,
+                jobs.redirect_url AS job_redirect_url,
+                applications.date_applied,
+                applications.resume_link,
+                applications.application_status,
+                applications.interview_details,
+                applications.contact_info
+            FROM 
+                jobs
+            LEFT JOIN 
+                applications ON jobs.id = applications.job_id
+            LEFT JOIN 
+                "user" ON applications.user_id = "user".id;
+        `);
+        // Success response
+        res.status(200).json({
+            success: true,
+            data: result.rows,
+        });
+    } catch (error) {
+        console.error('Error fetching all jobs:', error);
+        // Error response
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve jobs',
+            error: error.message,
+        });
+    }
+});
+
+
+// Export the router
 module.exports = router;

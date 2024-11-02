@@ -117,7 +117,6 @@ const removeJob = async (job) => {
                   <h2>{job.title}</h2>
                   <p>{job.description}</p>
                 </div>
-                <a href={job.redirect_url} target="_blank" rel="noopener noreferrer">Apply</a>
                 <div className="job-actions">
                   <button onClick={() => saveJob(job)} className="apply-button">Save</button>
                   <button onClick={() => removeJob(job)} className="decline-button">Remove</button>
