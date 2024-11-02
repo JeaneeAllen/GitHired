@@ -81,7 +81,7 @@ const removeJob = async (job) => {
     <div className="user-page-container">
       <div className="header">
         <h2>Welcome, {user.username}!</h2>
-        <p>Embark on Your Next Adventure! Discover Exciting New Career Opportunities Below.</p>
+        <p>Embark on Your Next Adventure! Discover Exciting New Career Opportunities Below!</p>
       </div>
 
       <div className="search-container">
