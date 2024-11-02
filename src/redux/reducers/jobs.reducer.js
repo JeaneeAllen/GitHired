@@ -17,17 +17,9 @@ const jobsReducer = (state = { jobs: [], savedJobs: [] }, action) => {
                 ...state,
                 savedJobs: action.payload
             };
-
-            case 'SAVE_DETAILS':
-            return {
-                ...state,
-                savedJobs: [...state.savedJobs, action.payload] // Assuming applications are treated as saved jobs
-            };
-
         default:
             return state;
-    };
-    
+    }
 }
 
 // user will be on the redux state at:
