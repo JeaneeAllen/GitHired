@@ -60,13 +60,19 @@ function App() {
             <SavedJobs />
           </ProtectedRoute>
 
-           {/* Visiting localhost:5173/JobDetails will show the details page. */}
-           <ProtectedRoute
+          {/* Visiting localhost:5173/JobDetails will show the details page. */}
+          <ProtectedRoute
             exact
             path="/JobDetails"
           >
             <JobDetails />
-            </ProtectedRoute>
+          </ProtectedRoute>
+
+          <ProtectedRoute
+            path="/JobDetails/:jobId"
+            component={JobDetails} />
+
+
 
           <Route
             exact

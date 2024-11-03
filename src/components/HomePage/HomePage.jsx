@@ -54,7 +54,8 @@ function HomePage() {
         created: job.created,
         description: job.description,
         redirect_url: job.redirect_url,
-        user_id: user.id // Ensure user.id is defined and valid
+        user_id: user.id,
+        external_job_id: job.external_job_id
       });
       console.log("Job saved response:", jobResult.data); // Check backend response
       dispatch({ type: 'SAVE_JOB', payload: jobResult.data });
