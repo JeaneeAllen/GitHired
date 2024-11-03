@@ -67,7 +67,7 @@ function JobDetails() {
         const confirmDelete = window.confirm('Are you sure you want to delete this job?');
         if (confirmDelete) {
             try {
-                const response = await axios.delete(`/api/jobs/${job.job_id}`);
+                const response = await axios.delete(`/api/jobs/${job.external_job_id}`);
                 if (response.data.success) {
                     dispatch({ type: 'DELETE_JOB', payload: job.id });
                     alert('Job deleted successfully!');
