@@ -61,6 +61,7 @@ function JobDetails() {
             console.error('Error saving application:', error);
             alert('An error occurred while saving the application. Please try again.');
         }
+        history.push('/savedjobs');
     };
 
     const handleDelete = async () => {
