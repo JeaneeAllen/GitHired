@@ -68,9 +68,10 @@ function JobDetails() {
         const confirmDelete = window.confirm('Are you sure you want to delete this job?');
         if (confirmDelete) {
             try {
+                console.log("Deleting job with id:", job.external_job_id);
                 const response = await axios.delete(`/api/jobs/${job.external_job_id}`);
                 if (response.data.success) {
-                    dispatch({ type: 'DELETE_JOB', payload: job.id });
+                    dispatch({ type: 'DELETE_JOB', payload: job.external_job_id });
                     alert('Job deleted successfully!');
                     history.push('/savedjobs'); // Navigate back after deletion
                 } else {
@@ -81,10 +82,9 @@ function JobDetails() {
                 alert('An error occurred while deleting the job. Please try again.');
             }
         }
-        history.push('/savedjobs');
     };
-
-
+    
+    
     return (
         <>
             <form onSubmit={handleSubmit} className="application-form">

@@ -95,25 +95,27 @@ router.get('/all-jobs', async (req, res) => {
     }
 });
 
-// DELETE route to remove a job by ID
 router.delete('/:external_job_id', async (req, res) => {
-    const jobExternalId = req.params.external_job_id;
+    const jobId = req.params.external_job_id;
+    console.log("Attempting to delete job with external_job_id:", jobId);
 
     try {
-        // Delete from `jobs` table
-        const jobResult = await pool.query('DELETE FROM jobs WHERE external_job_id = $1 RETURNING *', [jobExternalId]);
+        // Delete related application entries first
+        const applicationResult = await pool.query('DELETE FROM applications WHERE external_job_id = $1', [jobId]);
+        console.log("Deleted applications for job with external_job_id:", jobId);
+
+        // Then delete from jobs table using the external_job_id
+        const jobResult = await pool.query('DELETE FROM jobs WHERE external_job_id = $1 RETURNING *', [jobId]);
+        console.log("Job delete result:", jobResult);
 
         if (jobResult.rowCount === 0) {
             return res.status(404).json({ message: 'Job not found' });
         }
 
-        // Also delete from `applications` table
-        await pool.query('DELETE FROM applications WHERE external_job_id = $1', [jobExternalId]);
-
-        res.status(200).json({ message: 'Job and related application data removed successfully' });
+        res.status(200).json({ success: true, message: 'Job and related application data removed successfully' });
     } catch (error) {
         console.error('Error deleting job and applications:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
