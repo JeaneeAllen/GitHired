@@ -74,13 +74,14 @@ function JobDetails() {
                     alert('Job deleted successfully!');
                     history.push('/savedjobs'); // Navigate back after deletion
                 } else {
-                    alert(`Failed to delete job: ${response.data.message}`);
+                    alert(`Removed ${response.data.message}`);
                 }
             } catch (error) {
                 console.error('Error deleting job:', error);
                 alert('An error occurred while deleting the job. Please try again.');
             }
         }
+        history.push('/savedjobs');
     };
 
 
