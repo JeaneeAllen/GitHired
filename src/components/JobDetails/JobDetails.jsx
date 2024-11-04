@@ -61,25 +61,27 @@ function JobDetails() {
             console.error('Error saving application:', error);
             alert('An error occurred while saving the application. Please try again.');
         }
+        history.push('/savedjobs');
     };
 
     const handleDelete = async () => {
         const confirmDelete = window.confirm('Are you sure you want to delete this job?');
         if (confirmDelete) {
             try {
-                const response = await axios.delete(`/api/jobs/${job.job_id}`);
+                const response = await axios.delete(`/api/jobs/${job.external_job_id}`);
                 if (response.data.success) {
                     dispatch({ type: 'DELETE_JOB', payload: job.id });
                     alert('Job deleted successfully!');
                     history.push('/savedjobs'); // Navigate back after deletion
                 } else {
-                    alert(`Failed to delete job: ${response.data.message}`);
+                    alert(`Removed ${response.data.message}`);
                 }
             } catch (error) {
                 console.error('Error deleting job:', error);
                 alert('An error occurred while deleting the job. Please try again.');
             }
         }
+        history.push('/savedjobs');
     };
 
 
