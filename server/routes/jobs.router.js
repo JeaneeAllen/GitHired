@@ -41,7 +41,6 @@ router.post('/', async (req, res) => { // Changed path to /jobs
     const { title, company, created, description, redirect_url, user_id, external_job_id } = req.body;
 
     // Parse the company name from JSON if it is a JSON object
-    const companyName = typeof company === 'string' ? JSON.parse(company).display_name : company;
 
     try {
         const result = await pool.query(
@@ -80,6 +79,7 @@ router.get('/all-jobs', async (req, res) => {
             LEFT JOIN 
                 "user" ON applications.user_id = "user".id;
         `);
+
         // Success response
         res.status(200).json({
             success: true,
@@ -101,7 +101,6 @@ router.delete('/:external_job_id', async (req, res) => {
 
     try {
         // Delete related application entries first
-        const applicationResult = await pool.query('DELETE FROM applications WHERE external_job_id = $1', [jobId]);
         console.log("Deleted applications for job with external_job_id:", jobId);
 
         // Then delete from jobs table using the external_job_id
@@ -119,7 +118,48 @@ router.delete('/:external_job_id', async (req, res) => {
     }
 });
 
-
+router.get('/user_id', async (req, res) => {
+    const { user_id } = req.query;  // Accessing user_id from query parameters
+    
+    if (!user_id) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+  
+    try {
+      const result = await pool.query(
+        `SELECT 
+          j.id AS job_id,
+          j.title,
+          j.company,
+          j.created,
+          j.description,
+          j.redirect_url,
+          j.external_job_id,
+          a.date_applied,
+          a.resume_link,
+          a.application_status,
+          a.interview_details,
+          a.contact_info,
+          a.external_job_id AS application_external_job_id
+        FROM jobs j
+        LEFT JOIN applications a ON j.id = a.job_id AND a.user_id = $1
+        WHERE j.user_id = $1`, [user_id]
+      );
+      
+      res.status(200).json({
+        success: true,
+        data: result.rows,
+      });
+    } catch (error) {
+      console.error('Error fetching user jobs:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve jobs by user ID',
+        error: error.message,
+      });
+    }
+  });
+  
 
 
 module.exports = router;

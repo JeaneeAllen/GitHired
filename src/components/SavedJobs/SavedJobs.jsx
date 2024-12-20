@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import './SavedJobs.css';
@@ -6,15 +7,24 @@ import { useHistory } from 'react-router-dom';
 
 function SavedJobs() {
   const savedJobs = useSelector((state) => state.jobs.savedJobs);
+  const userId = useSelector((state) => state.user.id);  // Assuming user ID is stored in Redux state
   const dispatch = useDispatch();
   const history = useHistory();
 
   useEffect(() => {
     const fetchJobs = async () => {
+      if (!userId) {
+        console.error("User ID is missing!");
+        return;
+      }
+
       try {
-        const response = await axios.get('api/jobs/all-jobs');
+        const response = await axios.get(`/api/jobs/user_id`, {
+          params: { user_id: userId }  // Pass user_id as a query parameter
+        });
+
         if (response.data.success) {
-          console.log("Loaded saved jobs:", response.data.data); // Log saved jobs to verify structure
+          console.log("Loaded saved jobs:", response.data.data);
           dispatch({ type: 'LOAD_SAVED_JOBS', payload: response.data.data });
         } else {
           console.error('Failed to fetch jobs:', response.data.message);
@@ -23,17 +33,16 @@ function SavedJobs() {
         console.error('Error fetching jobs:', error);
       }
     };
-    fetchJobs();
-  }, [dispatch]);
-  
 
-  const handleClick = (event) => {
-    event.preventDefault();
+    fetchJobs();
+  }, [dispatch, userId]);  // Re-fetch jobs when userId changes
+
+  const handleBackClick = () => {
     history.push('/user');
   };
 
   const getJobIdFromUrl = (url) => {
-    const regex = /(?:\/)(\d+)(?:\?|$)/; // Matches digits between '/' and either '?' or end of the string
+    const regex = /(?:\/)(\d+)(?:\?|$)/;
     const match = url.match(regex);
     return match ? match[1] : null;
   };
@@ -67,7 +76,7 @@ function SavedJobs() {
         </thead>
         <tbody>
           {(savedJobs || []).map((job, index) => {
-            const jobId = getJobIdFromUrl(job.job_redirect_url || ''); // Provide a fallback to an empty string
+            
 
             return (
               <tr key={job.id || job.job_id || index}>
@@ -82,9 +91,11 @@ function SavedJobs() {
                 <td>{job.contact_info || 'N/A'}</td>
 
                 <td>
-                <button onClick={() => window.open(job.job_redirect_url, '_blank')}>Apply ✔</button>
+                  {job.job_redirect_url && (
+                    <button onClick={() => window.open(job.job_redirect_url, '_blank')}>Apply ✔</button>
+                  )}
                   <button onClick={() => history.push(`/JobDetails/${job.external_job_id}`)}>Add Details</button>
-                  <button onClick={handleClick}> ⬅ Back to Search</button>
+                  <button onClick={handleBackClick}> ⬅ Back to Search</button>
                 </td>
               </tr>
             );
