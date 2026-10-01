@@ -26,19 +26,21 @@ function HomePage() {
   // Adzuna ids of jobs the user has already saved, so their cards show "Saved"
   const [savedIds, setSavedIds] = useState(new Set());
   // The search the current results came from, so "Load more" pages through the same search
-  const [activeSearch, setActiveSearch] = useState({ keywords: 'Software Engineer, Business Analyst, Data Scientist, Data Analyst, Data Engineer', location: 'Minnesota' });
+  // The default search matches any of the job titles' words; typed searches match all words
+  const [activeSearch, setActiveSearch] = useState({ keywords: 'Software Engineer, Business Analyst, Data Scientist, Data Analyst, Data Engineer', location: 'Minnesota', matchAny: true });
   const dispatch = useDispatch();
 
   const showError = (message) => dispatch({ type: 'SHOW_TOAST', payload: { message, type: 'error' } });
 
-  const fetchJobs = async (searchKeywords, searchLocation, currentPage) => {
+  const fetchJobs = async (searchKeywords, searchLocation, currentPage, matchAny = false) => {
     setLoading(true);
     try {
       const response = await axios.get('/api/jobs/search', {
         params: {
           keywords: searchKeywords,
           location: searchLocation,
-          page: currentPage
+          page: currentPage,
+          matchAny
         }
       });
       return response.data;
@@ -53,7 +55,7 @@ function HomePage() {
 
   // Load the default search and the user's saved jobs once when the page opens
   useEffect(() => {
-    fetchJobs(activeSearch.keywords, activeSearch.location, 1).then(setJobs);
+    fetchJobs(activeSearch.keywords, activeSearch.location, 1, activeSearch.matchAny).then(setJobs);
     axios.get('/api/jobs')
       .then((response) => {
         setSavedIds(new Set(response.data.map((job) => job.external_job_id).filter(Boolean)));
@@ -65,13 +67,13 @@ function HomePage() {
     event.preventDefault();
     setJobs([]);
     const newJobs = await fetchJobs(keywords, location, 1);
-    setActiveSearch({ keywords, location });
+    setActiveSearch({ keywords, location, matchAny: false });
     setJobs(newJobs);
     setPage(1);
   };
 
   const loadMoreJobs = async () => {
-    const newJobs = await fetchJobs(activeSearch.keywords, activeSearch.location, page + 1);
+    const newJobs = await fetchJobs(activeSearch.keywords, activeSearch.location, page + 1, activeSearch.matchAny);
     setJobs((prevJobs) => [...prevJobs, ...newJobs]);
     setPage(page + 1);
   };

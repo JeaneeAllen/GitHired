@@ -9,16 +9,20 @@ const {
 // Every jobs route requires a logged in user
 router.use(rejectUnauthenticated);
 
-// Fetch jobs from Adzuna based on keywords and location
+// Fetch jobs from Adzuna based on keywords and location.
+// matchAny=true matches listings containing any of the words instead of all of them.
 router.get('/search', async (req, res) => {
-    const { keywords, location, page = 1 } = req.query;
+    const { keywords, location, page = 1, matchAny } = req.query;
+    const keywordParam = matchAny === 'true'
+        ? { what_or: (keywords || '').replace(/,/g, ' ') }
+        : { what: keywords };
     try {
         const response = await axios.get(`https://api.adzuna.com/v1/api/jobs/us/search/${page}`, {
             params: {
                 app_id: process.env.ADZUNA_API_ID,
                 app_key: process.env.ADZUNA_API_KEY,
                 results_per_page: 10,
-                what: keywords,
+                ...keywordParam,
                 where: location
             }
         });
