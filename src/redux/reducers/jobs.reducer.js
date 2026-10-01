@@ -20,6 +20,7 @@ const jobsReducer = (state = { jobs: [], savedJobs: [] }, action) => {
 
         case 'SAVE_DETAILS': {
             // Merge the saved application into its job instead of adding a new row
+            // eslint-disable-next-line no-unused-vars -- user_id is dropped so it isn't merged into the job
             const { id, job_id, user_id, ...details } = action.payload;
             return {
                 ...state,

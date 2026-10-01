@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { APPLICATION_STATUSES } from '../../constants/applicationStatus';
+import { companyName } from '../../utils/companyName';
 import './JobDetails.css';
 
 function JobDetails() {
@@ -89,7 +90,7 @@ function JobDetails() {
             <div className="job-details-card">
                 <div className="job-details-header">
                     <h2>{job.title}</h2>
-                    {job.company && <p className="job-details-company">{job.company}</p>}
+                    {companyName(job.company) && <p className="job-details-company">{companyName(job.company)}</p>}
                     {job.redirect_url && (
                         <a href={job.redirect_url} target="_blank" rel="noreferrer">View listing on Adzuna</a>
                     )}

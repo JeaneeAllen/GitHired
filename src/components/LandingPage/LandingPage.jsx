@@ -8,7 +8,7 @@ import RegisterForm from '../RegisterForm/RegisterForm';
 function LandingPage() {
   const history = useHistory();
 
-  const onLogin = (event) => {
+  const onLogin = () => {
     history.push('/login');
   };
 

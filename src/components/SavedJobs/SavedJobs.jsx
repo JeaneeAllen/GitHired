@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { statusClass } from '../../constants/applicationStatus';
+import { companyName } from '../../utils/companyName';
 import './SavedJobs.css';
 
 const formatDate = (date) => (date ? new Date(date).toLocaleDateString() : 'N/A');
@@ -51,7 +52,7 @@ function SavedJobs() {
     return (
       <div className="container saved-jobs-page saved-jobs-message">
         <h2>My Saved Jobs</h2>
-        <p>You haven't saved any jobs yet.</p>
+        <p>You haven&apos;t saved any jobs yet.</p>
         <Link to="/user" className="details-button">Find jobs</Link>
       </div>
     );
@@ -78,7 +79,7 @@ function SavedJobs() {
               return (
                 <React.Fragment key={job.job_id}>
                   <tr className={expanded ? 'expanded' : ''}>
-                    <td>{job.company || 'N/A'}</td>
+                    <td>{companyName(job.company) || 'N/A'}</td>
                     <td className="title-col">
                       <div className="job-title">{job.title || 'N/A'}</div>
                       <button
