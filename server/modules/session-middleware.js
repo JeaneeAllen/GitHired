@@ -42,10 +42,10 @@ module.exports = expressSession({
     name: 'user', // this is the name of the req.variable. 'user' is convention, but not required
     saveUninitialized: false,
     resave: false,
-    // This isn't currently being used but should be left in for future proofing
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // cookie expires after 7 days 
       httpOnly: true, // prevents client-side JS from accessing cookie 
-      secure: false // can only be set to true if the app uses https
+      secure: 'auto', // HTTPS-only when the site uses HTTPS (hosted); still works on http://localhost
+      sameSite: 'lax', // don't send the login cookie on requests from other sites
     },
 });
