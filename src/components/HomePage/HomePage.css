@@ -1,7 +1,6 @@
 .user-page-container {
     padding: 20px;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    background-color: var(--page-bg);
     min-height: 100vh;
 }
 
@@ -9,7 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #2170d0;
+    background-color: var(--primary);
     color: white;
     padding: 20px;
     border-radius: 8px;
@@ -53,12 +52,12 @@
 }
 
 .search-form input:focus {
-    border-color: #4CAF50;
+    border-color: var(--primary);
     outline: none;
 }
 
 .search-button {
-    background-color: #4CAF50;
+    background-color: var(--success);
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -66,7 +65,7 @@
 }
 
 .search-button:hover {
-    background-color: #45a049;
+    background-color: var(--success-dark);
 }
 
 .job-listings-container {
@@ -76,7 +75,7 @@
 .job-listings-container h1 {
     font-size: 1.8em;
     margin-bottom: 20px;
-    color: #333;
+    color: var(--text);
 }
 
 .job-grid {
@@ -103,25 +102,25 @@
 
 .job-info h2 {
     font-size: 1.5em;
-    color: #333;
+    color: var(--text);
     margin: 0 0 10px;
 }
 
 .job-info p {
-    color: #666;
+    color: var(--muted);
     font-size: 1em;
     margin-bottom: 15px;
 }
 
 .job-info .job-company {
-    color: #2170d0;
+    color: var(--primary);
     font-weight: bold;
     margin: 0 0 10px;
 }
 
 .view-listing-link {
     display: inline-block;
-    color: #2170d0;
+    color: var(--primary);
     font-weight: bold;
     text-decoration: none;
 }
@@ -147,29 +146,29 @@
 }
 
 .apply-button {
-    background-color: #46ad49;
+    background-color: var(--success);
     color: white;
     border: none;
 }
 
 .apply-button:hover {
-    background-color: #45a049;
+    background-color: var(--success-dark);
     transform: scale(1.05);
 }
 
 .decline-button {
-    background-color: #922922;
+    background-color: var(--danger);
     color: white;
     border: none;
 }
 
 .decline-button:hover {
-    background-color: #e53935;
+    background-color: var(--danger-dark);
     transform: scale(1.05);
 }
 
 .next-button {
-    background-color: #4CAF50;
+    background-color: var(--success);
     color: white;
     padding: 10px 20px;
     font-size: 1em;
@@ -183,11 +182,11 @@
 
 
 .next-button:hover {
-    background-color: #45a049;
+    background-color: var(--success-dark);
 }
 
 .logout-button {
-    background-color: #333;
+    background-color: var(--text);
     color: white;
     padding: 8px 15px;
     font-size: 1em;

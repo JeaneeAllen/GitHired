@@ -69,9 +69,9 @@ function SavedJobs() {
               <td>{job.contact_info || 'N/A'}</td>
 
               <td>
-                <button onClick={() => window.open(job.redirect_url, '_blank', 'noopener')}>Apply</button>
-                <button onClick={() => history.push(`/JobDetails/${job.job_id}`)}>Add Details</button>
-                <button onClick={() => removeJob(job)}>Remove Job</button>
+                <button className="apply-button" onClick={() => window.open(job.redirect_url, '_blank', 'noopener')}>Apply</button>
+                <button className="details-button" onClick={() => history.push(`/JobDetails/${job.job_id}`)}>Add Details</button>
+                <button className="remove-button" onClick={() => removeJob(job)}>Remove Job</button>
               </td>
 
             </tr>

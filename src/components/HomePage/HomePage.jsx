@@ -83,7 +83,7 @@ function HomePage() {
 
       <div className="search-container">
         <h1>Find Jobs</h1>
-        <form onSubmit={handleSearch}>
+        <form onSubmit={handleSearch} className="search-form">
           <input
             type="text"
             value={keywords}
@@ -100,7 +100,7 @@ function HomePage() {
             id="job-location"
             name="job-location"
           />
-          <button type="submit">Search</button>
+          <button type="submit" className="search-button">Search</button>
         </form>
       </div>
 

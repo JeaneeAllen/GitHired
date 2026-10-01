@@ -1,3 +1,22 @@
+/* --------------------------------------------------------------------------------
+Theme colors -- change these to restyle the whole app
+-------------------------------------------------------------------------------- */
+
+:root {
+  --primary: #2170d0;
+  --primary-dark: #1a5aa8;
+  --primary-light: #e8f0fb;
+  --success: #2e7d32;
+  --success-dark: #1b5e20;
+  --danger: #c62828;
+  --danger-dark: #8e0000;
+  --text: #222;
+  --muted: #666;
+  --border: #d9dee7;
+  --surface: #fff;
+  --page-bg: #f4f6fa;
+}
+
 html,
 body,
 #react-root {
@@ -7,6 +26,8 @@ body,
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0px;
+  color: var(--text);
+  background-color: var(--page-bg);
 }
 
 img {
@@ -29,10 +50,10 @@ Button
 .btn {
   display: inline-block;
   padding: 10px 20px;
-  border-color: #014041;
+  border-color: var(--primary-dark);
   border-width: 1px 1px 3px;
   border-radius: 4px;
-  background-color: #00acb0;
+  background-color: var(--primary);
   color: #f8f8f8;
   font-size: 1.1rem;
   outline: 0;
@@ -55,7 +76,7 @@ Button
 }
 
 .btn:hover {
-  background-color: #008183;
+  background-color: var(--primary-dark);
   text-decoration: none;
 }
 
@@ -72,8 +93,8 @@ Button
 
 .btn_asLink:hover {
   background-color: transparent;
-  border-color: #008183;
-  color: #008183;
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* --------------------------------------------------------------------------------
