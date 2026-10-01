@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT || 5001;
-const cors = require('cors');
 
-
-app.use(cors());
+// When hosted (e.g. on Render), requests arrive through an HTTPS proxy.
+// Trusting it lets Express see the request as secure, so secure cookies work.
+app.set('trust proxy', 1);
 
 // Middleware Includes
 const sessionMiddleware = require('./modules/session-middleware');

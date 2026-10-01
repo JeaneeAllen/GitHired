@@ -111,13 +111,19 @@ This code is also heavily commented. We recommend reading through the comments, 
 
 ## Deployment
 
-1. Create a new Heroku project.
-1. Link the Heroku project to the project GitHub Repo.
-1. Create an Heroku Postgres database.
-1. Connect to the Heroku Postgres database from Postico.
-1. Create the necessary tables.
-1. Add an environment variable for `SERVER_SESSION_SECRET` with a nice random string for security.
-1. In the deploy section, select manual deploy.
+These steps use [Render](https://render.com); Heroku and Railway work the same way.
+
+1. Create a Render PostgreSQL database.
+1. Create the tables by running `database.sql` against the database's External Database URL:
+   `psql "<external database url>" -f database.sql`
+1. Create a Render Web Service linked to this GitHub repo:
+   - Build command: `npm install --include=dev && npm run build` (Vite is a dev dependency)
+   - Start command: `npm start`
+1. Add these environment variables to the web service:
+   - `DATABASE_URL`: the database's Internal Database URL
+   - `SERVER_SESSION_SECRET`: a long random string (e.g. from `openssl rand -hex 32`)
+   - `ADZUNA_API_ID` and `ADZUNA_API_KEY`: from developer.adzuna.com
+1. Deploy. Pushes to the linked branch redeploy automatically.
 
 ## Update Documentation
 
