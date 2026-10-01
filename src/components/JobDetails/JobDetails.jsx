@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { APPLICATION_STATUSES } from '../../constants/applicationStatus';
 import './JobDetails.css';
 
 function JobDetails() {
@@ -73,67 +74,92 @@ function JobDetails() {
     };
 
     if (!job) {
-        return <p>Loading...</p>;
+        return <p className="job-details-loading">Loading…</p>;
     }
 
+    // Keep an older free-text status (e.g. "Pending") selectable alongside the standard ones
+    const statusOptions = applicationStatus && !APPLICATION_STATUSES.includes(applicationStatus)
+        ? [...APPLICATION_STATUSES, applicationStatus]
+        : APPLICATION_STATUSES;
+
     return (
-      <>
-        <h2>{job.title}{job.company && ` at ${job.company}`}</h2>
-        <form onSubmit={handleSubmit} className="application-form">
+        <div className="job-details-page">
+            <Link to="/savedjobs" className="back-link">← Back to My Jobs</Link>
 
-            <label>
-                Date Applied:
-                <input
-                    type="date"
-                    value={dateApplied}
-                    onChange={(e) => setDateApplied(e.target.value)}
-                />
-            </label>
+            <div className="job-details-card">
+                <div className="job-details-header">
+                    <h2>{job.title}</h2>
+                    {job.company && <p className="job-details-company">{job.company}</p>}
+                    {job.redirect_url && (
+                        <a href={job.redirect_url} target="_blank" rel="noreferrer">View listing on Adzuna</a>
+                    )}
+                </div>
 
-            <label>
-                Resume Link:
-                <input
-                    type="url"
-                    value={resumeLink}
-                    onChange={(e) => setResumeLink(e.target.value)}
-                    placeholder="http://example.com/my-resume"
-                />
-            </label>
+                <form onSubmit={handleSubmit} className="application-form">
+                    <div className="form-row">
+                        <label>
+                            Application Status
+                            <select
+                                value={applicationStatus}
+                                onChange={(e) => setApplicationStatus(e.target.value)}
+                            >
+                                <option value="">Not set</option>
+                                {statusOptions.map((status) => (
+                                    <option key={status} value={status}>{status}</option>
+                                ))}
+                            </select>
+                        </label>
 
-            <label>
-                Application Status:
-                <input
-                    type="text"
-                    value={applicationStatus}
-                    onChange={(e) => setApplicationStatus(e.target.value)}
-                />
-            </label>
+                        <label>
+                            Date Applied
+                            <input
+                                type="date"
+                                value={dateApplied}
+                                onChange={(e) => setDateApplied(e.target.value)}
+                            />
+                        </label>
+                    </div>
 
-            <label>
-                Interview Details:
-                <textarea
-                    value={interviewDetails}
-                    onChange={(e) => setInterviewDetails(e.target.value)}
-                    placeholder="Date/Time and Location"
-                />
-            </label>
+                    <label>
+                        Resume &amp; Cover Letter Link
+                        <input
+                            type="url"
+                            value={resumeLink}
+                            onChange={(e) => setResumeLink(e.target.value)}
+                            placeholder="https://example.com/my-resume"
+                        />
+                    </label>
 
-            <label>
-                Contact Info:
-                <input
-                    type="text"
-                    value={contactInfo}
-                    onChange={(e) => setContactInfo(e.target.value)}
-                />
-            </label>
+                    <label>
+                        Interview Details
+                        <textarea
+                            rows={3}
+                            value={interviewDetails}
+                            onChange={(e) => setInterviewDetails(e.target.value)}
+                            placeholder="Date/Time and Location"
+                        />
+                    </label>
 
-            <button type="submit">Save Job Details</button>
-        </form>
-<div>
-<button type="button" onClick={handleRemove}>Remove Job</button>
-</div>
+                    <label>
+                        Contact Info
+                        <input
+                            type="text"
+                            value={contactInfo}
+                            onChange={(e) => setContactInfo(e.target.value)}
+                            placeholder="Recruiter or hiring manager name, email, phone"
+                        />
+                    </label>
 
-</>
+                    <div className="form-actions">
+                        <button type="button" className="remove-job-button" onClick={handleRemove}>Remove Job</button>
+                        <div className="form-actions-right">
+                            <Link to="/savedjobs" className="cancel-link">Cancel</Link>
+                            <button type="submit" className="save-details-button">Save Details</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 }
 
