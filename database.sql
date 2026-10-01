@@ -15,7 +15,9 @@ CREATE TABLE "jobs" (
     "company" VARCHAR (255),
     "created" TIMESTAMP,
     "description" TEXT,
-    "redirect_url" VARCHAR (2048)
+    "redirect_url" VARCHAR (2048),
+    "external_job_id" BIGINT, -- the Adzuna job id, so a job can't be saved twice
+    UNIQUE ("user_id", "external_job_id")
 );
 
 CREATE TABLE "applications" (

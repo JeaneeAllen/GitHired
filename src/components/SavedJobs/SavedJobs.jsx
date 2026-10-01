@@ -18,9 +18,10 @@ function SavedJobs() {
     try {
       await axios.delete(`/api/jobs/${job.job_id}`);
       dispatch({ type: 'REMOVE_SAVED_JOB', payload: job.job_id });
+      dispatch({ type: 'SHOW_TOAST', payload: { message: `Removed "${job.title}"` } });
     } catch (error) {
       console.error('Error removing job:', error);
-      alert('Failed to remove job. Please try again.');
+      dispatch({ type: 'SHOW_TOAST', payload: { message: 'Failed to remove job. Please try again.', type: 'error' } });
     }
   };
 

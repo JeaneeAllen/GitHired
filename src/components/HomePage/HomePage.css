@@ -189,9 +189,25 @@
     border: 1px solid var(--border);
 }
 
+.apply-button.saved,
+.apply-button.saved:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary-light);
+    cursor: default;
+}
+
 .decline-button:hover {
     background-color: #eef0f4;
     color: var(--text);
+}
+
+.no-results,
+.loading-message {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: 1.1em;
+    margin: 30px 0;
 }
 
 .next-button {

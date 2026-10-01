@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './HomePage.css';
 
@@ -23,12 +22,17 @@ function HomePage() {
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
-  // The search the current results came from, so "Next" pages through the same search
+  const [loading, setLoading] = useState(false);
+  // Adzuna ids of jobs the user has already saved, so their cards show "Saved"
+  const [savedIds, setSavedIds] = useState(new Set());
+  // The search the current results came from, so "Load more" pages through the same search
   const [activeSearch, setActiveSearch] = useState({ keywords: 'Software Engineer', location: 'Minnesota' });
   const dispatch = useDispatch();
-  const history = useHistory();
+
+  const showError = (message) => dispatch({ type: 'SHOW_TOAST', payload: { message, type: 'error' } });
 
   const fetchJobs = async (searchKeywords, searchLocation, currentPage) => {
+    setLoading(true);
     try {
       const response = await axios.get('/api/jobs/search', {
         params: {
@@ -40,18 +44,26 @@ function HomePage() {
       return response.data;
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      alert('Failed to load jobs. Please try again.');
+      showError('Failed to load jobs. Please try again.');
       return [];
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Load the default search once when the page opens
+  // Load the default search and the user's saved jobs once when the page opens
   useEffect(() => {
     fetchJobs(activeSearch.keywords, activeSearch.location, 1).then(setJobs);
+    axios.get('/api/jobs')
+      .then((response) => {
+        setSavedIds(new Set(response.data.map((job) => job.external_job_id).filter(Boolean)));
+      })
+      .catch((error) => console.error('Error fetching saved jobs:', error));
   }, []);
 
   const handleSearch = async (event) => {
     event.preventDefault();
+    setJobs([]);
     const newJobs = await fetchJobs(keywords, location, 1);
     setActiveSearch({ keywords, location });
     setJobs(newJobs);
@@ -67,6 +79,7 @@ function HomePage() {
   const saveJob = async (job) => {
     try {
       const jobResult = await axios.post('/api/jobs', {
+        external_job_id: job.id,
         title: job.title,
         company: job.company?.display_name,
         created: job.created,
@@ -74,11 +87,16 @@ function HomePage() {
         redirect_url: job.redirect_url
       });
       dispatch({ type: 'SAVE_JOB', payload: { ...jobResult.data, job_id: jobResult.data.id } });
-      alert(`Job "${job.title}" saved successfully!`);
-      history.push('/savedjobs');
+      setSavedIds((prevIds) => new Set(prevIds).add(job.id));
+      dispatch({ type: 'SHOW_TOAST', payload: { message: `Saved "${job.title}" to My Jobs` } });
     } catch (error) {
+      if (error.response?.status === 409) {
+        // Already saved (e.g. in another tab) -- just mark it
+        setSavedIds((prevIds) => new Set(prevIds).add(job.id));
+        return;
+      }
       console.error('Error saving job:', error);
-      alert('Failed to save job. Please try again.');
+      showError('Failed to save job. Please try again.');
     }
   };
 
@@ -138,17 +156,22 @@ function HomePage() {
                   )}
                 </div>
                 <div className="job-actions">
-                  <button onClick={() => saveJob(job)} className="apply-button">Save</button>
+                  {savedIds.has(job.id) ? (
+                    <button className="apply-button saved" disabled>Saved ✓</button>
+                  ) : (
+                    <button onClick={() => saveJob(job)} className="apply-button">Save</button>
+                  )}
                   <button onClick={() => removeJob(job)} className="decline-button">Remove</button>
                 </div>
               </div>
             ))
           ) : (
-            <p>No jobs found. Please try a different search.</p>
+            !loading && <p className="no-results">No jobs found. Please try a different search.</p>
           )}
         </div>
-        {jobs.length > 0 && (
-          <button onClick={loadMoreJobs} className="next-button">Next</button>
+        {loading && <p className="loading-message">Searching for jobs…</p>}
+        {jobs.length > 0 && !loading && (
+          <button onClick={loadMoreJobs} className="next-button">Load more</button>
         )}
       </div>
     </div>

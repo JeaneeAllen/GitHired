@@ -37,6 +37,7 @@ const savedJobsQuery = `
         j.created,
         j.description,
         j.redirect_url,
+        j.external_job_id,
         a.id AS application_id,
         a.date_applied,
         a.resume_link,
@@ -77,17 +78,21 @@ router.get('/:jobId', async (req, res) => {
 
 // Save a job for the logged in user
 router.post('/', async (req, res) => {
-    const { title, company, created, description, redirect_url } = req.body;
+    const { external_job_id, title, company, created, description, redirect_url } = req.body;
 
     try {
         const result = await pool.query(
             `INSERT INTO jobs (
-                title, company, created, description, redirect_url, user_id
-            ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [title, company, created, description, redirect_url, req.user.id]
+                external_job_id, title, company, created, description, redirect_url, user_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [external_job_id, title, company, created, description, redirect_url, req.user.id]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
+        if (error.code === '23505') {
+            // unique_violation: this user already saved this Adzuna job
+            return res.status(409).json({ error: 'Job already saved' });
+        }
         console.error('Error saving job:', error);
         res.status(500).json({ error: 'Failed to save job' });
     }

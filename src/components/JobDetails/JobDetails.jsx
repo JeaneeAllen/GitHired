@@ -30,10 +30,10 @@ function JobDetails() {
             })
             .catch((error) => {
                 console.error('Error loading job:', error);
-                alert('Could not find that job.');
+                dispatch({ type: 'SHOW_TOAST', payload: { message: 'Could not find that job.', type: 'error' } });
                 history.push('/savedjobs');
             });
-    }, [jobId, history]);
+    }, [jobId, history, dispatch]);
 
     const handleSubmit = async (event) => {
       event.preventDefault();
@@ -49,11 +49,11 @@ function JobDetails() {
           });
   
           dispatch({ type: 'SAVE_DETAILS', payload: response.data.data });
-          alert('Application information saved successfully!');
+          dispatch({ type: 'SHOW_TOAST', payload: { message: 'Application details saved' } });
           history.push('/savedjobs');
       } catch (error) {
           console.error('Error saving application:', error);
-          alert('An error occurred while saving the application. Please try again.');
+          dispatch({ type: 'SHOW_TOAST', payload: { message: 'Failed to save details. Please try again.', type: 'error' } });
       }
   };
 
@@ -64,10 +64,11 @@ function JobDetails() {
         try {
             await axios.delete(`/api/jobs/${jobId}`);
             dispatch({ type: 'REMOVE_SAVED_JOB', payload: Number(jobId) });
+            dispatch({ type: 'SHOW_TOAST', payload: { message: `Removed "${job.title}"` } });
             history.push('/savedjobs');
         } catch (error) {
             console.error('Error removing job:', error);
-            alert('Failed to remove job. Please try again.');
+            dispatch({ type: 'SHOW_TOAST', payload: { message: 'Failed to remove job. Please try again.', type: 'error' } });
         }
     };
 

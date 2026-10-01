@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
+import Toast from '../Toast/Toast';
 
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
@@ -116,6 +117,7 @@ function App() {
           </Route>
         </Switch>
         <Footer />
+        <Toast />
       </div>
     </Router>
   );
