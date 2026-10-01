@@ -1,26 +1,36 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './SavedJobs.css';
+
+const formatDate = (date) => (date ? new Date(date).toLocaleDateString() : 'N/A');
 
 function SavedJobs() {
   const savedJobs = useSelector((state) => state.jobs.savedJobs);
   const dispatch = useDispatch();
+  const history = useHistory();
 
+  const removeJob = async (job) => {
+    if (!window.confirm(`Remove "${job.title}" from My Jobs?`)) {
+      return;
+    }
+    try {
+      await axios.delete(`/api/jobs/${job.job_id}`);
+      dispatch({ type: 'REMOVE_SAVED_JOB', payload: job.job_id });
+    } catch (error) {
+      console.error('Error removing job:', error);
+      alert('Failed to remove job. Please try again.');
+    }
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('/api/jobs/jobs/all-jobs');
-        if (response.data.success) {
-          dispatch({ type: 'LOAD_SAVED_JOBS', payload: response.data.data });
-        } else {
-          console.error('Failed to fetch jobs:', response.data.message);
-          // Handle the case where the API was reached but did not succeed
-        }
+        const response = await axios.get('/api/jobs');
+        dispatch({ type: 'LOAD_SAVED_JOBS', payload: response.data });
       } catch (error) {
         console.error('Error fetching jobs:', error);
-        // Handle fetch error (e.g., network issue)
       }
     };
     fetchJobs();
@@ -36,7 +46,7 @@ function SavedJobs() {
             <th>Company Name</th>
             <th>Job Title</th>
             <th>Job Listing Date</th>
-            <th>Job Description</th>
+            <th className="description-col">Job Description</th>
             <th>Date Applied</th>
             <th>Resume & Cover Letter Link</th>
             <th>Application Status</th>
@@ -47,20 +57,21 @@ function SavedJobs() {
         </thead>
         <tbody>
           {(savedJobs || []).map((job) => (
-            <tr key={job.id || job.job_id}>
+            <tr key={job.job_id}>
               <td>{job.company || 'N/A'}</td>
               <td>{job.title || 'N/A'}</td>
-              <td>{new Date(job.job_created).toLocaleDateString() || 'N/A'}</td>
-              <td>{job.job_description || 'N/A'}</td>
-              <td>{job.date_applied || 'N/A'}</td>
-              <td>{job.resume_link ? <a href={job.resume_link}>Link</a> : 'N/A'}</td>
+              <td>{formatDate(job.created)}</td>
+              <td className="description-col">{job.description || 'N/A'}</td>
+              <td>{formatDate(job.date_applied)}</td>
+              <td>{job.resume_link ? <a href={job.resume_link} target="_blank" rel="noreferrer">Link</a> : 'N/A'}</td>
               <td>{job.application_status || 'N/A'}</td>
               <td>{job.interview_details || 'N/A'}</td>
               <td>{job.contact_info || 'N/A'}</td>
 
               <td>
-                <button onClick={() => window.open(job.job_redirect_url, '_blank')}>Apply</button>
-                <button>Add Details</button>
+                <button onClick={() => window.open(job.redirect_url, '_blank', 'noopener')}>Apply</button>
+                <button onClick={() => history.push(`/JobDetails/${job.job_id}`)}>Add Details</button>
+                <button onClick={() => removeJob(job)}>Remove Job</button>
               </td>
 
             </tr>

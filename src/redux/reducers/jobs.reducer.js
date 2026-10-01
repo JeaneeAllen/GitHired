@@ -18,10 +18,21 @@ const jobsReducer = (state = { jobs: [], savedJobs: [] }, action) => {
                 savedJobs: action.payload
             };
 
-            case 'SAVE_DETAILS':
+        case 'SAVE_DETAILS': {
+            // Merge the saved application into its job instead of adding a new row
+            const { id, job_id, user_id, ...details } = action.payload;
             return {
                 ...state,
-                savedJobs: [...state.savedJobs, action.payload] // Assuming applications are treated as saved jobs
+                savedJobs: state.savedJobs.map((job) =>
+                    job.job_id === job_id ? { ...job, ...details, application_id: id } : job
+                )
+            };
+        }
+
+        case 'REMOVE_SAVED_JOB':
+            return {
+                ...state,
+                savedJobs: state.savedJobs.filter((job) => job.job_id !== action.payload)
             };
 
         default:

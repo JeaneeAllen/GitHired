@@ -1,25 +1,46 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './JobDetails.css';
 
-function JobDetails({ job }) {
-    const user = useSelector((state) => state.user);
+function JobDetails() {
+    const { jobId } = useParams();
     const dispatch = useDispatch();
+    const history = useHistory();
 
+    const [job, setJob] = useState(null);
     const [dateApplied, setDateApplied] = useState('');
     const [resumeLink, setResumeLink] = useState('');
     const [applicationStatus, setApplicationStatus] = useState('');
     const [interviewDetails, setInterviewDetails] = useState('');
     const [contactInfo, setContactInfo] = useState('');
 
+    // Load the job and pre-fill any details that were already saved
+    useEffect(() => {
+        axios.get(`/api/jobs/${jobId}`)
+            .then((response) => {
+                const savedJob = response.data;
+                setJob(savedJob);
+                setDateApplied(savedJob.date_applied ? savedJob.date_applied.slice(0, 10) : '');
+                setResumeLink(savedJob.resume_link || '');
+                setApplicationStatus(savedJob.application_status || '');
+                setInterviewDetails(savedJob.interview_details || '');
+                setContactInfo(savedJob.contact_info || '');
+            })
+            .catch((error) => {
+                console.error('Error loading job:', error);
+                alert('Could not find that job.');
+                history.push('/savedjobs');
+            });
+    }, [jobId, history]);
+
     const handleSubmit = async (event) => {
       event.preventDefault();
   
       try {
-          const response = await axios.post('/api/applications', {
-              job_id: job.id,
-              user_id: user.id,
+          const response = await axios.post('/api/jobs/applications', {
+              job_id: jobId,
               date_applied: dateApplied,
               resume_link: resumeLink,
               application_status: applicationStatus,
@@ -27,21 +48,36 @@ function JobDetails({ job }) {
               contact_info: contactInfo,
           });
   
-          if (response.data.success) {
-              dispatch({ type: 'SAVE_DETAILS', payload: response.data.data });
-              alert('Application information saved successfully!');
-          } else {
-              alert(`Failed to save application: ${response.data.message}`);
-          }
+          dispatch({ type: 'SAVE_DETAILS', payload: response.data.data });
+          alert('Application information saved successfully!');
+          history.push('/savedjobs');
       } catch (error) {
           console.error('Error saving application:', error);
           alert('An error occurred while saving the application. Please try again.');
       }
   };
-  
+
+    const handleRemove = async () => {
+        if (!window.confirm(`Remove "${job.title}" from My Jobs?`)) {
+            return;
+        }
+        try {
+            await axios.delete(`/api/jobs/${jobId}`);
+            dispatch({ type: 'REMOVE_SAVED_JOB', payload: Number(jobId) });
+            history.push('/savedjobs');
+        } catch (error) {
+            console.error('Error removing job:', error);
+            alert('Failed to remove job. Please try again.');
+        }
+    };
+
+    if (!job) {
+        return <p>Loading...</p>;
+    }
 
     return (
       <>
+        <h2>{job.title}{job.company && ` at ${job.company}`}</h2>
         <form onSubmit={handleSubmit} className="application-form">
 
             <label>
@@ -50,7 +86,6 @@ function JobDetails({ job }) {
                     type="date"
                     value={dateApplied}
                     onChange={(e) => setDateApplied(e.target.value)}
-                    required
                 />
             </label>
 
@@ -61,7 +96,6 @@ function JobDetails({ job }) {
                     value={resumeLink}
                     onChange={(e) => setResumeLink(e.target.value)}
                     placeholder="http://example.com/my-resume"
-                    required
                 />
             </label>
 
@@ -71,7 +105,6 @@ function JobDetails({ job }) {
                     type="text"
                     value={applicationStatus}
                     onChange={(e) => setApplicationStatus(e.target.value)}
-                    required
                 />
             </label>
 
@@ -90,14 +123,13 @@ function JobDetails({ job }) {
                     type="text"
                     value={contactInfo}
                     onChange={(e) => setContactInfo(e.target.value)}
-                    required
                 />
             </label>
 
             <button type="submit">Save Job Details</button>
         </form>
 <div>
-<button type="submit">Remove Job</button>
+<button type="button" onClick={handleRemove}>Remove Job</button>
 </div>
 
 </>

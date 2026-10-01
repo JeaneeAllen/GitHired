@@ -113,6 +113,23 @@
     margin-bottom: 15px;
 }
 
+.job-info .job-company {
+    color: #2170d0;
+    font-weight: bold;
+    margin: 0 0 10px;
+}
+
+.view-listing-link {
+    display: inline-block;
+    color: #2170d0;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.view-listing-link:hover {
+    text-decoration: underline;
+}
+
 .job-actions {
     display: flex;
     justify-content: space-between;

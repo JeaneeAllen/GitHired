@@ -2,11 +2,16 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 const pool = require('../modules/pool');
+const {
+    rejectUnauthenticated,
+} = require('../modules/authentication-middleware');
+
+// Every jobs route requires a logged in user
+router.use(rejectUnauthenticated);
 
 // Fetch jobs from Adzuna based on keywords and location
 router.get('/search', async (req, res) => {
     const { keywords, location, page = 1 } = req.query;
-    console.log("Fetching jobs with:", { keywords, location, page }); // Log parameters
     try {
         const response = await axios.get(`https://api.adzuna.com/v1/api/jobs/us/search/${page}`, {
             params: {
@@ -17,43 +22,38 @@ router.get('/search', async (req, res) => {
                 where: location
             }
         });
-        console.log("Fetched jobs from Adzuna:", response.data.results); // Log response
         res.json(response.data.results);
     } catch (error) {
-        console.error('Error fetching jobs from Adzuna:', error);
+        console.error('Error fetching jobs from Adzuna:', error.message);
         res.status(500).json({ error: 'Failed to fetch jobs from Adzuna' });
     }
 });
 
-// Get saved jobs for a specific user
-router.get('/:userId', async (req, res) => {
-    const { userId } = req.params;
-    console.log("Fetching saved jobs for user ID:", userId); // Log userId for debugging
+const savedJobsQuery = `
+    SELECT
+        j.id AS job_id,
+        j.title,
+        j.company,
+        j.created,
+        j.description,
+        j.redirect_url,
+        a.id AS application_id,
+        a.date_applied,
+        a.resume_link,
+        a.application_status,
+        a.interview_details,
+        a.contact_info
+    FROM
+        jobs j
+    LEFT JOIN
+        applications a ON j.id = a.job_id AND a.user_id = j.user_id
+    WHERE
+        j.user_id = $1`;
+
+// Get the logged in user's saved jobs (with application details, if any)
+router.get('/', async (req, res) => {
     try {
-        const result = await pool.query(
-            `SELECT 
-                j.id AS job_id,
-                j.title,
-                j.company,
-                j.created,
-                j.description,
-                j.redirect_url,
-                a.id AS application_id,
-                a.user_id,
-                a.date_applied,
-                a.resume_link,
-                a.application_status,
-                a.interview_details,
-                a.contact_info
-            FROM 
-                jobs j
-            INNER JOIN 
-                applications a ON j.id = a.job_id
-            WHERE 
-                a.user_id = $1;`,  // Filter by user ID
-            [userId]
-        );
-        console.log("Fetched saved jobs:", result.rows); // Log result.rows
+        const result = await pool.query(`${savedJobsQuery} ORDER BY j.id;`, [req.user.id]);
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching saved jobs:', error);
@@ -61,36 +61,30 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
-
-
-// Save a job application
-router.post('/applications', async (req, res) => {
-    const { job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info } = req.body;
-
+// Get one of the logged in user's saved jobs
+router.get('/:jobId', async (req, res) => {
     try {
-        const result = await pool.query(
-            `INSERT INTO applications (
-                job_id, user_id, date_applied, resume_link, application_status,
-                interview_details, contact_info
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-            [job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info]
-        );
-        res.status(201).json(result.rows[0]);
+        const result = await pool.query(`${savedJobsQuery} AND j.id = $2;`, [req.user.id, req.params.jobId]);
+        if (result.rows.length === 0) {
+            return res.sendStatus(404);
+        }
+        res.json(result.rows[0]);
     } catch (error) {
-        console.error('Error saving application:', error);
-        res.status(500).json({ error: 'Failed to save application' });
+        console.error('Error fetching saved job:', error);
+        res.status(500).json({ error: 'Failed to retrieve saved job' });
     }
 });
 
+// Save a job for the logged in user
 router.post('/', async (req, res) => {
-    const { title, company, created, description, redirect_url, user_id } = req.body;
+    const { title, company, created, description, redirect_url } = req.body;
 
     try {
         const result = await pool.query(
             `INSERT INTO jobs (
                 title, company, created, description, redirect_url, user_id
             ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [title, company, created, description, redirect_url, user_id]
+            [title, company, created, description, redirect_url, req.user.id]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -99,18 +93,37 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Save a job details
+// Save (create or update) application details for one of the user's jobs
 router.post('/applications', async (req, res) => {
-    const { job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info } = req.body;
+    const { job_id, date_applied, resume_link, application_status, interview_details, contact_info } = req.body;
+    const userId = req.user.id;
+    // Every detail field is optional; store blank fields as NULL (an empty string isn't a valid DATE)
+    const details = [date_applied, resume_link, application_status, interview_details, contact_info]
+        .map((value) => (value === '' || value === undefined ? null : value));
+    const values = [job_id, userId, ...details];
 
     try {
-        const result = await pool.query(
-            `INSERT INTO applications (
-                job_id, user_id, date_applied, resume_link, application_status,
-                interview_details, contact_info
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-            [job_id, user_id, date_applied, resume_link, application_status, interview_details, contact_info]
+        const job = await pool.query('SELECT id FROM jobs WHERE id = $1 AND user_id = $2;', [job_id, userId]);
+        if (job.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Job not found' });
+        }
+
+        let result = await pool.query(
+            `UPDATE applications SET
+                date_applied = $3, resume_link = $4, application_status = $5,
+                interview_details = $6, contact_info = $7
+            WHERE job_id = $1 AND user_id = $2 RETURNING *`,
+            values
         );
+        if (result.rows.length === 0) {
+            result = await pool.query(
+                `INSERT INTO applications (
+                    job_id, user_id, date_applied, resume_link, application_status,
+                    interview_details, contact_info
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+                values
+            );
+        }
         res.status(201).json({
             success: true,
             data: result.rows[0],
@@ -120,11 +133,26 @@ router.post('/applications', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to save application',
-            error: error.message,
         });
     }
 });
 
+// Delete one of the user's saved jobs and its application details
+router.delete('/:jobId', async (req, res) => {
+    const { jobId } = req.params;
+    const userId = req.user.id;
 
+    try {
+        await pool.query('DELETE FROM applications WHERE job_id = $1 AND user_id = $2;', [jobId, userId]);
+        const result = await pool.query('DELETE FROM jobs WHERE id = $1 AND user_id = $2;', [jobId, userId]);
+        if (result.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+        res.sendStatus(204);
+    } catch (error) {
+        console.error('Error deleting job:', error);
+        res.status(500).json({ error: 'Failed to delete job' });
+    }
+});
 
 module.exports = router;

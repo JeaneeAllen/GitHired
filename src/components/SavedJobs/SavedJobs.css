@@ -41,6 +41,15 @@
     font-size: 14px;
   }
   
+  /* Give the description column the most room, and left-align it so longer text is readable */
+  .jobs-table .description-col {
+    width: 30%;
+  }
+
+  .jobs-table td.description-col {
+    text-align: left;
+  }
+
   /* Table row style */
   .jobs-table tr:nth-child(even) {
     background-color: #f2f2f2;
