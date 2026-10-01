@@ -4,6 +4,19 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './HomePage.css';
 
+// e.g. "$90k – $120k", or "$95k (est.)" when Adzuna estimated the salary
+const formatSalary = (job) => {
+  const toK = (amount) => `$${Math.round(amount / 1000)}k`;
+  const { salary_min: min, salary_max: max } = job;
+  if (!min && !max) {
+    return null;
+  }
+  const range = min && max && Math.round(min / 1000) !== Math.round(max / 1000)
+    ? `${toK(min)} – ${toK(max)}`
+    : toK(min || max);
+  return job.salary_is_predicted === '1' ? `${range} (est.)` : range;
+};
+
 function HomePage() {
   const user = useSelector((store) => store.user);
   const [keywords, setKeywords] = useState('');
@@ -113,7 +126,11 @@ function HomePage() {
                 <div className="job-info">
                   <h2>{job.title}</h2>
                   <p className="job-company">{job.company?.display_name || 'Company not listed'}</p>
-                  <p>{job.description}</p>
+                  <p className="job-meta">
+                    {job.location?.display_name && <span>📍 {job.location.display_name}</span>}
+                    {formatSalary(job) && <span>💰 {formatSalary(job)}</span>}
+                  </p>
+                  <p className="job-description">{job.description}</p>
                   {job.redirect_url && (
                     <a href={job.redirect_url} target="_blank" rel="noreferrer" className="view-listing-link">
                       View listing on Adzuna

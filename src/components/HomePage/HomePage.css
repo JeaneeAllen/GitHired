@@ -79,49 +79,73 @@
 }
 
 .job-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
+/* Cards stretch to the same height, with the buttons pinned to the bottom */
 .job-card {
-    width: 280px;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: var(--surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    transition: box-shadow 0.2s;
 }
 
 .job-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.job-info {
+    flex: 1;
 }
 
 .job-info h2 {
-    font-size: 1.5em;
+    font-size: 1.2em;
+    line-height: 1.3;
     color: var(--text);
-    margin: 0 0 10px;
+    margin: 0 0 6px;
 }
 
 .job-info p {
     color: var(--muted);
-    font-size: 1em;
-    margin-bottom: 15px;
+    font-size: 0.95em;
+    margin: 0 0 12px;
 }
 
 .job-info .job-company {
     color: var(--primary);
     font-weight: bold;
-    margin: 0 0 10px;
+    margin: 0 0 6px;
+}
+
+.job-info .job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 0.85em;
+}
+
+/* Show the first few lines of the description; the full listing is on Adzuna */
+.job-info .job-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .view-listing-link {
     display: inline-block;
     color: var(--primary);
     font-weight: bold;
+    font-size: 0.9em;
     text-decoration: none;
 }
 
@@ -131,40 +155,43 @@
 
 .job-actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
 }
 
 .apply-button,
 .decline-button {
+    flex: 1;
     padding: 8px 15px;
     border-radius: 5px;
     font-size: 0.9em;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.3s, background-color 0.3s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .apply-button {
     background-color: var(--success);
     color: white;
-    border: none;
+    border: 1px solid var(--success);
 }
 
 .apply-button:hover {
     background-color: var(--success-dark);
-    transform: scale(1.05);
 }
 
+/* Remove only hides the listing, so it's a quiet secondary button */
 .decline-button {
-    background-color: var(--danger);
-    color: white;
-    border: none;
+    background-color: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
 }
 
 .decline-button:hover {
-    background-color: var(--danger-dark);
-    transform: scale(1.05);
+    background-color: #eef0f4;
+    color: var(--text);
 }
 
 .next-button {
