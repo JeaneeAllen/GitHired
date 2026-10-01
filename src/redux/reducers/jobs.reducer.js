@@ -5,11 +5,11 @@ const jobsReducer = (state = { jobs: [], savedJobs: [] }, action) => {
                 ...state,
                 jobs: action.payload
             };
-
         case 'SAVE_JOB':
             return {
                 ...state,
                 savedJobs: [...state.savedJobs, action.payload]
+
             };
 
         case 'LOAD_SAVED_JOBS':
@@ -18,22 +18,28 @@ const jobsReducer = (state = { jobs: [], savedJobs: [] }, action) => {
                 savedJobs: action.payload
             };
 
-        case 'ADD_DETAILS':
+        case 'SAVE_DETAILS': {
+            // Merge the saved application into its job instead of adding a new row
+            // eslint-disable-next-line no-unused-vars -- user_id is dropped so it isn't merged into the job
+            const { id, job_id, user_id, ...details } = action.payload;
             return {
                 ...state,
                 savedJobs: state.savedJobs.map((job) =>
-                    job.external_job_id === action.payload.external_job_id ? { ...job, ...action.payload } : job),
+                    job.job_id === job_id ? { ...job, ...details, application_id: id } : job
+                )
+            };
+        }
+
+        case 'REMOVE_SAVED_JOB':
+            return {
+                ...state,
+                savedJobs: state.savedJobs.filter((job) => job.job_id !== action.payload)
             };
 
-            case 'DELETE_JOB':
-                return {
-                    ...state,
-                    savedJobs: state.savedJobs.filter((job) => job.external_job_id !== action.payload),
-                };
-                
-            default:
-                return state;
-    }
+        default:
+            return state;
+    };
+    
 }
 
 // user will be on the redux state at:

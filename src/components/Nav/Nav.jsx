@@ -32,10 +32,6 @@ function Nav() {
             My Jobs
             </Link>
 
-            <Link className="navLink" to="/JobDetails">
-            Job Details
-            </Link>
-
             <LogOutButton className="navLink" />
           </>
         )}

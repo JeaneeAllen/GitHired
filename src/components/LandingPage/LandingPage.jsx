@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import './LandingPage.css';
 
@@ -6,40 +6,45 @@ import './LandingPage.css';
 import RegisterForm from '../RegisterForm/RegisterForm';
 
 function LandingPage() {
-  const [heading, setHeading] = useState('');
   const history = useHistory();
 
-  const onLogin = (event) => {
+  const onLogin = () => {
     history.push('/login');
   };
 
   return (
     <div className="container">
-      <h2>{heading}</h2>
-
       <div className="grid">
-        <div className="grid-col grid-col_8">
-          <p>
-          Welcome to the job search app designed to simplify your career journey! 
-          Log in or sign up now to start exploring exciting new opportunities and land your dream job.
+        <div className="grid-col grid-col_8 landing-intro">
+          <h1>Your job search, organized.</h1>
+          <p className="landing-tagline">
+            Search jobs, save the ones you like, and track every application in one place.
           </p>
 
-          <p>
-          Keep every step of your job hunt organized, from saved applications and resumes 
-          to interview notes and application statuses. Ready to take the next step? It's time to Git Hired!
-          </p>
-
-
+          <ul className="landing-features">
+            <li>
+              <strong>Find jobs</strong>
+              <span>Search thousands of listings by title, keyword, and location.</span>
+            </li>
+            <li>
+              <strong>Save the good ones</strong>
+              <span>Keep a short list of the roles you want to pursue.</span>
+            </li>
+            <li>
+              <strong>Track your progress</strong>
+              <span>Record when you applied, your resume, interviews, and contacts.</span>
+            </li>
+          </ul>
         </div>
         <div className="grid-col grid-col_4">
           <RegisterForm />
 
-          <center>
+          <div className="landing-login">
             <h4>Already a Member?</h4>
             <button className="btn btn_sizeSm" onClick={onLogin}>
               Login
             </button>
-          </center>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 .user-page-container {
     padding: 20px;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    background-color: var(--page-bg);
     min-height: 100vh;
 }
 
@@ -9,7 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #2170d0;
+    background-color: var(--primary);
     color: white;
     padding: 20px;
     border-radius: 8px;
@@ -53,12 +52,12 @@
 }
 
 .search-form input:focus {
-    border-color: #4CAF50;
+    border-color: var(--primary);
     outline: none;
 }
 
 .search-button {
-    background-color: #4CAF50;
+    background-color: var(--success);
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -66,7 +65,7 @@
 }
 
 .search-button:hover {
-    background-color: #45a049;
+    background-color: var(--success-dark);
 }
 
 .job-listings-container {
@@ -76,83 +75,143 @@
 .job-listings-container h1 {
     font-size: 1.8em;
     margin-bottom: 20px;
-    color: #333;
+    color: var(--text);
 }
 
 .job-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
+/* Cards stretch to the same height, with the buttons pinned to the bottom */
 .job-card {
-    width: 280px;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: var(--surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    transition: box-shadow 0.2s;
 }
 
 .job-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.job-info {
+    flex: 1;
 }
 
 .job-info h2 {
-    font-size: 1.5em;
-    color: #333;
-    margin: 0 0 10px;
+    font-size: 1.2em;
+    line-height: 1.3;
+    color: var(--text);
+    margin: 0 0 6px;
 }
 
 .job-info p {
-    color: #666;
-    font-size: 1em;
-    margin-bottom: 15px;
+    color: var(--muted);
+    font-size: 0.95em;
+    margin: 0 0 12px;
+}
+
+.job-info .job-company {
+    color: var(--primary);
+    font-weight: bold;
+    margin: 0 0 6px;
+}
+
+.job-info .job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 0.85em;
+}
+
+/* Show the first few lines of the description; the full listing is on Adzuna */
+.job-info .job-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.view-listing-link {
+    display: inline-block;
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 0.9em;
+    text-decoration: none;
+}
+
+.view-listing-link:hover {
+    text-decoration: underline;
 }
 
 .job-actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
 }
 
 .apply-button,
 .decline-button {
+    flex: 1;
     padding: 8px 15px;
     border-radius: 5px;
     font-size: 0.9em;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.3s, background-color 0.3s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .apply-button {
-    background-color: #46ad49;
+    background-color: var(--success);
     color: white;
-    border: none;
+    border: 1px solid var(--success);
 }
 
 .apply-button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+    background-color: var(--success-dark);
 }
 
+/* Remove only hides the listing, so it's a quiet secondary button */
 .decline-button {
-    background-color: #922922;
-    color: white;
-    border: none;
+    background-color: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+
+.apply-button.saved,
+.apply-button.saved:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary-light);
+    cursor: default;
 }
 
 .decline-button:hover {
-    background-color: #e53935;
-    transform: scale(1.05);
+    background-color: #eef0f4;
+    color: var(--text);
+}
+
+.no-results,
+.loading-message {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: 1.1em;
+    margin: 30px 0;
 }
 
 .next-button {
-    background-color: #4CAF50;
+    background-color: var(--success);
     color: white;
     padding: 10px 20px;
     font-size: 1em;
@@ -166,11 +225,11 @@
 
 
 .next-button:hover {
-    background-color: #45a049;
+    background-color: var(--success-dark);
 }
 
 .logout-button {
-    background-color: #333;
+    background-color: var(--text);
     color: white;
     padding: 8px 15px;
     font-size: 1em;

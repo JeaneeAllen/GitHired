@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Nav from '../Nav/Nav';
 import Footer from '../Footer/Footer';
+import Toast from '../Toast/Toast';
 
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
@@ -60,19 +61,13 @@ function App() {
             <SavedJobs />
           </ProtectedRoute>
 
-          {/* Visiting localhost:5173/JobDetails will show the details page. */}
+          {/* Visiting localhost:5173/JobDetails/:jobId will show the details page for that saved job. */}
           <ProtectedRoute
             exact
-            path="/JobDetails"
+            path="/JobDetails/:jobId"
           >
             <JobDetails />
-          </ProtectedRoute>
-
-          <ProtectedRoute
-            path="/JobDetails/:jobId"
-            component={JobDetails} />
-
-
+            </ProtectedRoute>
 
           <Route
             exact
@@ -122,6 +117,7 @@ function App() {
           </Route>
         </Switch>
         <Footer />
+        <Toast />
       </div>
     </Router>
   );

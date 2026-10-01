@@ -1,108 +1,165 @@
-/* Style for the container */
-.container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  /* Style for the heading */
-  .container p {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  /* Style for the table */
-  .jobs-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-    table-layout: fixed;
-    background-color: #f5f5f5;
-  }
-  
-  /* Header row style */
-  .jobs-table th {
-    background-color: #2170d0;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-    font-weight: bold;
-    font-size: 14px;
-  }
-  
-  /* Cell style */
-  .jobs-table td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-    word-wrap: break-word;
-    font-size: 14px;
-  }
-  
-  /* Table row style */
-  .jobs-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  /* Apply and details button styles */
-  .apply-button, .details-button {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  
-  .apply-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-  }
-  
-  .details-button {
-    background-color: #2196F3;
-    color: white;
-    border: none;
-  }
-  
-  /* Link styling */
-  a {
-    color: #2196F3;
-    text-decoration: none;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Responsive styling */
-  @media (max-width: 768px) {
-    .jobs-table th, .jobs-table td {
-      font-size: 12px;
-      padding: 8px;
-    }
-  }
+.saved-jobs-page h2 {
+  margin-top: 0;
+}
 
-  .apply-link {
-    color: #4CAF50;
-    margin-right: 10px;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  .details-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  
-  .details-button:hover {
-    background-color: #0056b3;
-  }
-  
-  
-  
+.saved-jobs-page.saved-jobs-message {
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Lets the table scroll sideways on narrow screens instead of squashing */
+.table-scroll {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.jobs-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  background-color: var(--surface);
+}
+
+.jobs-table th {
+  background-color: var(--primary);
+  color: white;
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.jobs-table td {
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  word-wrap: break-word;
+}
+
+.jobs-table tr.expanded td {
+  background-color: var(--primary-light);
+}
+
+.jobs-table .title-col {
+  width: 35%;
+}
+
+.jobs-table .actions-col {
+  white-space: nowrap;
+}
+
+.job-title {
+  font-weight: bold;
+}
+
+.toggle-details {
+  padding: 0;
+  margin-top: 4px;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.toggle-details:hover {
+  text-decoration: underline;
+}
+
+/* Expanded details */
+.details-row td {
+  background-color: #fafbfd;
+  border-top: none;
+}
+
+.details-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 20px;
+  margin: 4px 0;
+}
+
+.details-list dt {
+  font-weight: bold;
+  color: var(--muted);
+}
+
+.details-list dd {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Status labels */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.status-saved { background-color: #eceff3; color: #4a5260; }
+.status-applied { background-color: var(--primary-light); color: var(--primary-dark); }
+.status-interviewing { background-color: #fff4d6; color: #8a5a00; }
+.status-offer { background-color: #e3f4e4; color: var(--success-dark); }
+.status-rejected { background-color: #fbe6e6; color: var(--danger-dark); }
+.status-other { background-color: #eceff3; color: #4a5260; }
+
+/* Buttons */
+.saved-jobs-page .apply-button,
+.saved-jobs-page .details-button,
+.saved-jobs-page .remove-button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.saved-jobs-page .apply-button {
+  background-color: var(--success);
+  color: white;
+  border: 1px solid var(--success);
+}
+
+.saved-jobs-page .apply-button:hover {
+  background-color: var(--success-dark);
+}
+
+.saved-jobs-page .details-button {
+  background-color: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.saved-jobs-page .details-button:hover {
+  background-color: var(--primary-dark);
+  text-decoration: none;
+}
+
+.saved-jobs-page .remove-button {
+  background-color: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.saved-jobs-page .remove-button:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+/* Links (scoped so other pages keep their own link styles) */
+.saved-jobs-page a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.saved-jobs-page a:hover {
+  text-decoration: underline;
+}
