@@ -26,7 +26,7 @@ function HomePage() {
   // Adzuna ids of jobs the user has already saved, so their cards show "Saved"
   const [savedIds, setSavedIds] = useState(new Set());
   // The search the current results came from, so "Load more" pages through the same search
-  const [activeSearch, setActiveSearch] = useState({ keywords: 'Software Engineer', location: 'Minnesota' });
+  const [activeSearch, setActiveSearch] = useState({ keywords: 'Software Engineer, Business Analyst, Data Scientist, Data Analyst, Data Engineer', location: 'Minnesota' });
   const dispatch = useDispatch();
 
   const showError = (message) => dispatch({ type: 'SHOW_TOAST', payload: { message, type: 'error' } });
