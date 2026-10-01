@@ -78,3 +78,68 @@ Grid
   flex-basis: 100%;
   max-width: 100%;
 }
+
+/* --------------------------------------------------------------------------------
+Landing page content
+-------------------------------------------------------------------------------- */
+
+.landing-intro {
+  padding-right: 2rem;
+}
+
+.landing-intro h1 {
+  font-size: 2.4em;
+  margin: 0.5em 0 0.3em;
+  color: var(--text);
+}
+
+.landing-tagline {
+  font-size: 1.25em;
+  color: var(--muted);
+  margin-bottom: 2em;
+}
+
+.landing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.landing-features li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--surface);
+  border-left: 4px solid var(--primary);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.landing-features strong {
+  color: var(--primary);
+  font-size: 1.1em;
+}
+
+.landing-features span {
+  color: var(--muted);
+}
+
+.landing-login {
+  text-align: center;
+}
+
+/* Stack the intro above the register form on small screens */
+@media (max-width: 768px) {
+  .grid-col_8,
+  .grid-col_4 {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  .landing-intro {
+    padding-right: 0.5rem;
+  }
+}
